@@ -29,17 +29,26 @@
 </details>
 
 ## 1. Project Overview
-
-This project attempts to address 
 ---
 
 ## 2. Background
 
-### 2.1 Biophysical Parameters
+### 2.1 Biophysical Parameters and Radiative Transfer Models
+
+The regular and accurate elucidation of crop biophysical parameters is essential for crop trait and health monitoring, phenotyping, and crop yield prediction (Ishaq et al., 2023; Seghal et al, 2016). Leaf chlorophyll content (C$_{ab}$), for example, is an effective of indicator of stresses such as nitrogen deficiency (Xie et al., 2019). Similarly, leaf area index (LAI) provides insight into ecological processes such as photosynthesis and evapotranspiration (Seghal et al. 2016), while peak seasonal LAI exhibits a strong relationship with end-of-season crop yield (Lewis et al, 2024).
+
 
 
 ### 2.2 Current Approaches and Challenges in Biophysical Parameter Extraction
 
+#### 2.2.1 Radiative Transfer Models
+
+
+
+#### 2.2.2 ARC
+
+
+#### 2.2.3 Variational Autoencoders and PROSAIL-VAE
 
 
 ### 2.3 ARC-VAE
@@ -120,6 +129,15 @@ GEOL0069-Week4/
 ---
 
 ## References
+
+Ishaq, R.A.F., Zhou, G., Tian, C., Tan, Y., Jing, G., Jiang, H. and Obaid-ur-Rehman (2024) 'A Systematic Review of Radiative Transfer Models for Crop Yield Prediction and Crop Traits Retrieval', Remote Sensing, 16(1), p. 121. doi: 10.3390/rs16010121.
+
+Lewis, P.E., Yin, F., Gomez-Dans, J.L., Weiß, T. and Adam, E., 2024. Crop Yield Mapping with ARC using only Optical Remote Sensing. ISPRS Annals of the Photogrammetry, Remote Sensing and Spatial Information Sciences, X-3-2024, pp. 199–206. Available at: https://doi.org/10.5194/isprs-annals-X-3-2024-199-2024.
+
+Sehgal, V.K., Chakraborty, D. and Sahoo, R.N., 2016. Inversion of radiative transfer model for retrieval of wheat biophysical parameters from broadband reflectance measurements. Information Processing in Agriculture, 3(2), pp.107–118. Available at: https://doi.org/10.1016/j.inpa.2016.04.001.
+
+Xie, Q., Dash, J., Huete, A., Jiang, A., Yin, G., Ding, Y., Peng, D., Hall, C.C., Brown, L., Shi, Y., Ye, H., Dong, Y. and Huang, W. (2019) 'Retrieval of crop biophysical parameters from Sentinel-2 remote sensing imagery', International Journal of Applied Earth Observation and Geoinformation, 80, pp. 187-195. doi: 10.1016/j.jag.2019.04.019.
+
 
 
 ---
