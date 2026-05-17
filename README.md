@@ -39,7 +39,7 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 
 The increasing availability of remote sensing data enables scalable mapping of these variables via inversion of radiative transfer models (RTMs), circumventing the need for time-consuming and expensive field studies. RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties (Ishaq et al., 2023; Sibiya et al., 2024).
 
-Among the most widely used RTM is the PROSAIL model, which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models (Jacquemoud, 2009). PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties (Jacquemoud and Baret, 1990; Berger et al., 2018). Initially only employing three input parameters -- leaf mesophyll (N), chlorophyll a and b concentration (C$_{ab}$), and leaf water content (C$_w$) -- it has been expanded to incorporate additional variables including dry matter content (C$_m$), leaf mass per area (LMA), brown pigments (C$_{bp}$), total carotenoid content (C$_{cx}$, leaf anthocyanin content (C$_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC) (Feret et al., 2008; Feret et al., 2020). 
+Among the most widely used RTM is the PROSAIL model, which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models (Jacquemoud, 2009). PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties (Jacquemoud and Baret, 1990; Berger et al., 2018). Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration (C$_{ab}$), and leaf water content (C$_w$) - it has been expanded to incorporate additional variables including dry matter content (C$_m$), leaf mass per area (LMA), brown pigments (C$_{bp}$), total carotenoid content (C$_{cx}$, leaf anthocyanin content (C$_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC) (Feret et al., 2008; Feret et al., 2020). 
 
 SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather
 than a single leaf. It accounts for:
@@ -56,7 +56,7 @@ leaves. SAIL uses a four-stream approximation:
 - Diffuse downward radiation
 - Diffuse upwards radiation
 
-SAIL then outputs canopy reflectance and transmittance, including soil contribution, thus acting as a bridge between fundamental biophysical properties and remote sensing observations.
+SAIL then outputs canopy reflectance and transmittance, including soil contribution, thus acting as a bridge between fundamental biophysical properties and remote sensing observations. [CITAITON?]
 
 ### 2.2 Current Approaches and Challenges in Biophysical Parameter Extraction
 
