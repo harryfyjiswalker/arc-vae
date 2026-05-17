@@ -33,44 +33,31 @@
 
 ## 2. Background
 
-### 2.1 Biophysical Parameters and Radiative Transfer Models
+### 2.1 Biophysical Parameter Extraction
 
 The regular and accurate elucidation of crop biophysical parameters is essential for crop trait and health monitoring, phenotyping, crop yield prediction, and precision agriculture more generally (Ishaq et al., 2023; Seghal et al, 2016). Leaf chlorophyll content (C$_{ab}$), for example, is an effective of indicator of stresses such as nitrogen deficiency (Xie et al., 2019). Similarly, leaf area index (LAI) provides insight into ecological processes such as photosynthesis and evapotranspiration (Seghal et al. 2016), while peak seasonal LAI exhibits a strong relationship with end-of-season yield (Lewis et al, 2024).
 
-The increasing availability of remote sensing data enables scalable mapping of these variables via inversion of radiative transfer models (RTMs), circumventing the need for time-consuming and expensive field studies. RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties (Ishaq et al., 2023; Sibiya et al., 2024).
+#### 2.1.1 Radiative Transfer Models
 
-Among the most widely used RTM is the PROSAIL model, which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models (Jacquemoud, 2009). PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties (Jacquemoud and Baret, 1990; Berger et al., 2018). Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration (C$\_{ab}$), and leaf water content (C$\_w$) - it has been expanded to incorporate additional variables including dry matter content (C$\_m$), leaf mass per area (LMA), brown pigments (C$\_{bp}$), total carotenoid content (C$\_{cx}$, leaf anthocyanin content (C$\_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC) (Feret et al., 2008; Feret et al., 2020). 
+The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables, circumventing the need for time-consuming and expensive field studies. Progress has been made in this context via inversion of radiative transfer models (RTMs). RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties (Ishaq et al., 2023; Sibiya et al., 2024).
 
-SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather
-than a single leaf. It accounts for:
-— Leaf optical properties (reflectance and transmittance from PROSPECT)
-— Leaf angle distribution (how leaves are oriented in 3D)
-— Leaf area index (LAI, total leaf area per ground area)
-— Canopy structure and soil background
-— Sun and sensor geometry: solar zenith angle, sensor/viewing angle, relative azimuth angle
+Among the most widely used RTM in this context is the PROSAIL model, which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models (Jacquemoud, 2009). PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties (Jacquemoud and Baret, 1990; Berger et al., 2018). Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration (C$\_{ab}$), and leaf water content (C$\_w$) - it has been expanded to incorporate additional variables including dry matter content (C$\_m$), leaf mass per area (LMA), brown pigments (C$\_{bp}$), total carotenoid content (C$\_{cx}$, leaf anthocyanin content (C$\_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC) (Feret et al., 2008; Feret et al., 2020). SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather
+than a single leaf.[citation?]
 
-Leaves are modelled as turbid medium layers: photons can reflect, transmit, or scatter between
-leaves. SAIL uses a four-stream approximation:
-- Direct sunlight down
-- Direct sunlight reflected up
-- Diffuse downward radiation
-- Diffuse upwards radiation
+However, despite their promise, the practical utility of RTMs in downstream agricultural remote sensing tasks has been constrained by both the ill-posed nature of RTM parameter estimation from earth observation data  - inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality) - and the computational intensity of inversion (Yin _et al._, 2025; Zerah _et al._ (2024); Mensah _et al._ (2025)).
 
-SAIL then outputs canopy reflectance and transmittance, including soil contribution, thus acting as a bridge between fundamental biophysical properties and remote sensing observations. [CITAITON?]
-
-### 2.2 Current Approaches and Challenges in Biophysical Parameter Extraction
-
-#### 2.2.1 Radiative Transfer Models
+### 2.2 Challenges 
 
 
 
-#### 2.2.2 ARC
 
 
-#### 2.2.3 Variational Autoencoders and PROSAIL-VAE
+However, Ishaq _et al._ (2023), in
+
+#### 2.3 Variational Autoencoders and PROSAIL-VAE
 
 
-### 2.3 ARC-VAE
+
 
 
 
@@ -173,11 +160,17 @@ Remote Sensing of Environment, vol. 34, no. 2, pp. 75–91, Nov. 1990.
 
 Lewis, P.E., Yin, F., Gomez-Dans, J.L., Weiß, T. and Adam, E., 2024. Crop Yield Mapping with ARC using only Optical Remote Sensing. ISPRS Annals of the Photogrammetry, Remote Sensing and Spatial Information Sciences, X-3-2024, pp. 199–206. Available at: https://doi.org/10.5194/isprs-annals-X-3-2024-199-2024.
 
+Mensah, P., Aderinto, P.V., Yusuf, I.S. and Pretorius, A. (2025) 'Physics informed Transformer-VAE for biophysical parameter estimation: PROSAIL model inversion in Sentinel-2 imagery', arXiv preprint arXiv:2511.10387. Available at: https://arxiv.org/abs/2511.10387.
+
 Sehgal, V.K., Chakraborty, D. and Sahoo, R.N., 2016. Inversion of radiative transfer model for retrieval of wheat biophysical parameters from broadband reflectance measurements. Information Processing in Agriculture, 3(2), pp.107–118. Available at: https://doi.org/10.1016/j.inpa.2016.04.001.
 
 Sibiya, B.S., Odindi, J., Mutanga, O., Cho, M.A. and Masemola, C., 2025. The utility of radiative transfer models (RTM) on remotely sensed data in retrieving biophysical and biochemical properties of terrestrial biomes: A systematic review. Advances in Space Research, 75(10), pp. 7424–7444. Available at: https://doi.org/10.1016/j.asr.2025.02.052.
 
 Xie, Q., Dash, J., Huete, A., Jiang, A., Yin, G., Ding, Y., Peng, D., Hall, C.C., Brown, L., Shi, Y., Ye, H., Dong, Y. and Huang, W. (2019) 'Retrieval of crop biophysical parameters from Sentinel-2 remote sensing imagery', International Journal of Applied Earth Observation and Geoinformation, 80, pp. 187-195. doi: 10.1016/j.jag.2019.04.019.
+
+Yin, F., Lewis, P.E., Gómez-Dans, J.L. and Weiß, T. (2025) 'Archetypal crop trait dynamics for enhanced retrieval of biophysical parameters from Sentinel-2 MSI', Remote Sensing of Environment, 318, 114510. Available at: https://doi.org/10.1016/j.rse.2024.114510.
+
+Zérah, Y., Valero, S. and Inglada, J. (2024) 'Physics-constrained deep learning for biophysical parameter retrieval from Sentinel-2 images: Inversion of the PROSAIL model', Remote Sensing of Environment, 312, 114309. Available at: https://doi.org/10.1016/j.rse.2024.114309.
 
 
 
