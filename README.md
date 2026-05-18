@@ -95,12 +95,18 @@ Simultaneously, with respect to the VAE framework, the ARC archetype provides a 
 
 
 
-### 3.2 Results
+### 3.2 Methodology and Results
+
+We train the model on 200,000 synthetic, masked Sentinel-2 reflectance observations using a T4 GPU in Google Colab. Training takes 5 hours. A 10,000 validation set is used to calculate the ELBO. We find that beta = 0.3 avoids posterior collapse vs etc.? Model performance is benchmarked against ARC.
+
+We report performance on both synthetic and real data
 
 #### 3.2.1 Performance on Simulated S2 Reflectance
 
+Table 1 
 
-#### 3.2.2 Performance on Validation Data
+
+#### 3.2.2 Performance on Ground Truth Data
 
 
 ### 3.3 Video Summary
