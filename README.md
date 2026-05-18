@@ -86,17 +86,25 @@ Simultaneously, recent physics-informed deep learning architectures have exhibit
 
 For this project, we therefore investigate whether integrating ARC's archetype and decoder into these VAE-based frameworks can combine the complementary strengths of both approaches. We consider that, with respect to ARC, the VAE framework would allow amortisation of the cost of inference through a learned encoder. ARC's Monte Carlo solver requires  $N_{MC} = 2 \times 10^6$ PROSAIL forward model evaluations per pixel at inference time, which is paid independently for each pixel, year, and region. In contrast, a trained VAE encoder would enable mapping of the full S2 time series directly to the posterior distribution over $(p,h)$ in a single forward pass, with the computational cost of training paid once on simulations sampled from the archetype prior distribution. 
 
-Simultaneously, with respect to the VAE framework, the ARC archetype provides a structured prior over $(p,h)$ -- the posterior distribution of scaling and phenological parameters derived from Sentinel-2 observations -- which naturally replaces the crop- and region-agnostic uniform distributions of Zerah _et al._ and Mensah _et al._ with a physically-grounded, temporally-resolved description of expected canopy dynamics specific to a given crop. Further, the ARC decoder enables extraction of the development trajectory of biophysical parameters over the full growing season rather than for a single snapshot.
+Simultaneously, with respect to the VAE framework, the ARC archetype provides a structured prior over $(p,h)$ -- the posterior distribution of scaling and phenological parameters derived from Sentinel-2 observations -- which naturally replaces the crop-agnostic uniform distributions of Zerah _et al._ and Mensah _et al._ with a physically-grounded, temporally-resolved description of expected canopy dynamics specific to a given crop. Further, the ARC decoder enables extraction of the development trajectory of biophysical parameters over the full growing season rather than solely single-date inversion.
 
 ## 3. Remote Sensing Technique and Model Architecture
 
 ### 3.1 ARC-VAE Architecture
 
-The ARC-VAE architecture consists of a transformer-based encoder and frozen ARC decoder. The encoder maps a variable-length time series of $T$ cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $\mathbb{R}^7$ are biophysical scaling parameters and **h** $\in$ $\mathbb{R}^4$ are phenological timing parameters. At inference, the posterior mean $**\mu**$ is used as a point estimate, allowing for mapping from the observed time series to a full seasonal biophysical parameter trajectory in a single forward pass.
+The ARC-VAE encoder maps a variable-length time series of cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $\mathbb{R}^7$ are biophysical scaling parameters and **h** $\in$ $\mathbb{R}^4$ are phenological timing parameters. At inference, the posterior mean $**\mu**$ is used as a point estimate, allowing for mapping from the observed time series to a full seasonal biophysical parameter trajectory in a single forward pass.
 
-#### 3.1.1 Input Representation and Encoder
+#### 3.1.1 Input Representation
 
-Each observation $t$ consists of 10-band surface reflectance **$r_t$** $\in$ $\mathbb{R}^{10}$, viewing geometry **$a_t$** $\in$ $\mathbb{R}^3$ (solar zenith, view zenith, relative azimuth), and calendar day-of-year $DOY_t$. The reflectance and angles are normalised by fixed band-wise constants to ensure stable training and concatenated into a 13-dimensional feature vector, which is then projected to $d_{model} = 128$ dimensional latent space via a linear layer to yield token **$u_t$**. 
+Each observation at time $t$ consists of 10-band surface reflectance **$r_t$** $\in$ $\mathbb{R}^{10}$, viewing geometry **$a_t$** $\in$ $\mathbb{R}^3$ (solar zenith, view zenith, relative azimuth), and calendar day-of-year $DOY_t$. Reflectance and angular variables are normalised using fixed band-wise constants and concatenated into a 13-dimensional vector. This is projected to a $d_{model} = 128$ embedding via a linear layer to form token **$u_t$**. To encode seasonality, we add a positional encoding for DOY composed of (i) four annual sine/ cosine harmonics and (ii) a standard sinusoidal positional encoding. This combined representation is projected from 136 to 128 dimensions and added to each token. Padded time steps then are masked out during subsequent computation.
+
+#### 3.1.2 Encoder
+
+
+#### 3.1.3 Decoder
+
+
+The reflectance and angles are normalised by fixed band-wise constants to ensure stable training and concatenated into a 13-dimensional feature vector, which is then projected to $d_{model} = 128$ dimensional latent space via a linear layer to yield token **$u_t$**. 
 
 
 A linear layer projects this feature vector in a 
