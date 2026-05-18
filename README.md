@@ -42,7 +42,7 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables, circumventing the need for time-consuming and expensive field studies. Progress has been made in this context via inversion of radiative transfer models (RTMs). RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties.[1][5]
 
 <p align="center">
-  <img src="/images/PROSAIL_flow.png" width="50%" alt="PROSAIL flow">
+  <img src="/images/PROSAIL_flow1.png" width="50%" alt="PROSAIL flow">
   <br>
   <em>Figure 1: Flowchart depiction of the PROSAIL model.[14].</em>
 
