@@ -67,7 +67,7 @@ The Archetypal Crop Trait Dynamics (ARC) model, recently developed by Yin _et al
 
 In practice, ARC operates in two phases (Fig. 2). First, SIAC-corrected Sentinel-2 bidirectional refectance time series are obtained over a large region for pixels covering fields of a given crop. To these, artificial neural network (ANN) emulators of the PROSAIL RTM are applied to obtain time series of seven biophysical parameters (Table 1) for each pixel, which are then matched to a common timeline using peak LAI as a reference point. For each parameter, the median time series over all pixels is then obtained, which constitutes that parameter's "archetype" i.e. its typical seasonal development.
 
-These archetypes are then used to constrain parameter retrieval when the model is applied to a new pixel. 
+These archetypes are then used to constrain parameter retrieval when the model is applied to a new pixel. Eleven scaling parameters are defined, comprising seven magnitude parameters (h, one for ecah archetype) and four timing parameters that describe the start and end of the growing season alongside behaviour during green-up and senescence. 
 
 
 
