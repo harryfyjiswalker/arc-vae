@@ -98,14 +98,19 @@ The ARC-VAE encoder maps a variable-length time series of cloud-free Sentinel-2 
 
 Each observation at time $t$ consists of 10-band surface reflectance **$r_t$** $\in$ $\mathbb{R}^{10}$, viewing geometry **$a_t$** $\in$ $\mathbb{R}^3$ (solar zenith, view zenith, relative azimuth), and calendar day-of-year $DOY_t$. To support batching, sequences of variable length are padded to a fixed maximum length $T_{max}$. Padded positions are filled with zeroes and excluded from subsequent computations via an observation mask. 
 
-Reflectance and angular variables are normalised using fixed band-wise constants and concatenated into a 13-dimensional vector. This is projected to a $d_{model} = 128$ embedding via a linear layer to form token $\mathbf{u_t}$. To encode seasonality, we construct a DOY positional encoding consisting of four sinusoidal annual harmonics combined with a standard sinusoidal positional encoding. The resulting 136-dimensional representation is projected to 128 dimensions and added to each token embedding.
+Reflectance and angular variables are normalised using fixed band-wise constants and concatenated into a 13-dimensional vector, which is projected to a $d_{model} = 128$ embedding via a linear layer to form token $\mathbf{u_t}$. To encode seasonality, we construct a DOY positional encoding consisting of four sinusoidal annual harmonics combined with a standard sinusoidal positional encoding. The resulting 136-dimensional representation is projected to 128 dimensions and added to each token embedding.
 
 #### 3.1.2 Transformer Encoder
 
-The encoder consists of four pre-norm Transformer layers. Each layer applies multi-head self-attention with four heads and key dimension $d_k = 32$, followed by a position-wise feed-forward network with hidden dimension $d_{\text{ff}} = 256$ and ReLU activation
+The encoder consists of four pre-norm Transformer layers. Each layer applies multi-head self-attention with four heads and key dimension $d_k = 32$, followed by a position-wise feed-forward network with hidden dimension $d_{\text{ff}} = 256$ and ReLU activation. Residual connections are used throughout. 
+
+Self-attention is computed only over valid (non-padded) positions via the observation mask. The output is a contextualised sequence representation 
+$\mathbf{H} \in R^{Tx128}$, 
+where each token aggregates information across all valid observations in the time series.
 
 #### 3.1.3 Decoder
 
+Instead of global pooling, we use
 
 The reflectance and angles are normalised by fixed band-wise constants to ensure stable training and concatenated into a 13-dimensional feature vector, which is then projected to $d_{model} = 128$ dimensional latent space via a linear layer to yield token **$u_t$**. 
 
