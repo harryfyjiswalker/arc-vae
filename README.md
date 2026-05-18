@@ -84,6 +84,11 @@ Simultaneously, recent physics-informed deep learning architectures have exhibit
 
 ### 2.2. ARC-VAE
 
+For this project, we therefore investigate whether integrating ARC's archetype and decoder into these VAE-based frameworks can combine the complementary strengths of both approaches. We consider that, with respect to ARC, the VAE framework would allow amortisation of the cost of inference through a learned encoder. ARC's Monte Carlo solver requires  $N_{MC} = 2 \times 10^6$ PROSAIL forward model evaluations per pixel at inference time, which is paid independently for each pixel, year, and region. In contrast, a trained VAE encoder would enable mapping of the full S2 time series directly to the posterior distribution over $(p,h)$ in a single forward pass, with the computational cost of training paid once on simulations sampled from the archetype prior distribution.
+
+
+Given the complimentary advantages of ARC and physics-informed approaches in terms of time-series retrieval and computational efficiency, for this project we consider whether integration of ARC's archetype and decoder into these VAE-based frameworks may allow 
+
 Both employ independent uniform distributions within physiological bounds as the prior, which constrains parameters to plausible ranges but encodes no crop- or region-specific information.
 
 with respect tothe integration of RTM
