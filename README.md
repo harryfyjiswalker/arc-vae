@@ -84,20 +84,9 @@ Simultaneously, recent physics-informed deep learning architectures have exhibit
 
 ### 2.2. ARC-VAE
 
-For this project, we therefore investigate whether integrating ARC's archetype and decoder into these VAE-based frameworks can combine the complementary strengths of both approaches. We consider that, with respect to ARC, the VAE framework would allow amortisation of the cost of inference through a learned encoder. ARC's Monte Carlo solver requires  $N_{MC} = 2 \times 10^6$ PROSAIL forward model evaluations per pixel at inference time, which is paid independently for each pixel, year, and region. In contrast, a trained VAE encoder would enable mapping of the full S2 time series directly to the posterior distribution over $(p,h)$ in a single forward pass, with the computational cost of training paid once on simulations sampled from the archetype prior distribution.
+For this project, we therefore investigate whether integrating ARC's archetype and decoder into these VAE-based frameworks can combine the complementary strengths of both approaches. We consider that, with respect to ARC, the VAE framework would allow amortisation of the cost of inference through a learned encoder. ARC's Monte Carlo solver requires  $N_{MC} = 2 \times 10^6$ PROSAIL forward model evaluations per pixel at inference time, which is paid independently for each pixel, year, and region. In contrast, a trained VAE encoder would enable mapping of the full S2 time series directly to the posterior distribution over $(p,h)$ in a single forward pass, with the computational cost of training paid once on simulations sampled from the archetype prior distribution. 
 
-
-Given the complimentary advantages of ARC and physics-informed approaches in terms of time-series retrieval and computational efficiency, for this project we consider whether integration of ARC's archetype and decoder into these VAE-based frameworks may allow 
-
-Both employ independent uniform distributions within physiological bounds as the prior, which constrains parameters to plausible ranges but encodes no crop- or region-specific information.
-
-with respect tothe integration of RTM
-
-recent developments in physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion, while enabling significantly 
-
-
-
-
+Simultaneously, with respect to the VAE framework, the ARC archetype provides a structured prior over $(p,h)$ -- the posterior distribution of scaling and phenological parameters derived from Sentinel-2 observations -- which naturally replaces the crop- and region-agnostic uniform distributions of Zerah \textit{et al.} and Mensah \textit{et al.} with a physically-grounded, temporally-resolved description of expected canopy dynamics specific to a given crop. Further, the ARC decoder enables extraction of the development trajectory of biophysical parameters over the full growing season rather than for a single snapshot.
 
 ARC AND MENSAH
 
