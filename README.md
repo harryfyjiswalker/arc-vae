@@ -61,23 +61,13 @@ However, the practical utility of PROSAIL and other RTMs in monitoring applicati
 
 </p>
 
-The Archetypal Crop Trait Dynamics (ARC) model, recently developed by Yin _et al._ (2025), addresses challenges of equfinality and phenological development by assuming that:[11]
+The Archetypal Crop Trait Dynamics (ARC) model, recently developed by Yin _et al._ (2025) [11], addresses challenges of equfinality and phenological development by assuming that:
 - biophysical parameters vary smoothly over the growing season; and,
 - the smooth function that represents the variation of a biophysical parameter over a season  for a given crop in a given field can be approximated by a transformation (in terms of magnitude, p, and phenology, h) of the average function (the "archetype") for that crop over many instances.
 
 In practice, ARC operates in two phases (Fig. 2). First, SIAC-corrected Sentinel-2 bidirectional refectance time series are obtained over a large region for pixels covering fields of a given crop. To these, artificial neural network (ANN) emulators of the (inverted) PROSAIL RTM are applied to obtain time series of seven biophysical parameters (Table 1) for each pixel, which are then matched to a common timeline using a double logistic model of LAI as a reference point. For each parameter, the median time series over all pixels is then obtained, which constitutes that parameter's "archetype" i.e. its typical seasonal development.
 
 These archetypes are then used to constrain parameter retrieval when the model is applied to a new pixel. Eleven scaling parameters are defined, comprising seven magnitude parameters (h, one for each archetype) and four timing parameters that describe the start and end of the growing season alongside behaviour during green-up and senescence. _In essence, the model then seeks to obtain the scaling parameters that "squish" or "stretch" the archetype curves along the y-axis (magnitude) and/ or x-axis (phenology) to transform them into curves matching the observed variations in the target pixel._ This is achieved by applying a Monte Carlo search to generate many (p,h) parameter combinations from uniform bounds. The archetype model is then applied to each (p,h) to obtain the resulting biophysical parameter time series, which are subsequently run back through the forward PROSAIL model to estimate the candidate Sentinel-2 reflectances resulting from each (p,h) combination. A KNN search is then used to obtain the K = 100 nearest neighbours to the true reflectance of the target pixel; the mean, weighted by distance to the target, of the (p,h) combinations responsible for these 100 nearest reflectances is then taken to produce the final estimate of the biophysical parameter time series at that pixel.
-
-
-
-are then randomly sampled from uniform bounds and the archetype model applied to transform them into bio
-
-
-
-[11]
-
-illthe former through the Archetypal Crop Trait Dynamics (ARC) model, which
 
 ### 2.1.3 Variational Autoencoders and PROSAIL-VAE
 
