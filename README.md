@@ -57,7 +57,7 @@ However, the practical utility of PROSAIL and other RTMs in monitoring applicati
 <p align="center">
   <img src="/images/ARC_model.jpg" width="50%" alt="ARC">
   <br>
-  <em>Figure 2: Flowchart depiction of the ARC model, reproduced from Yin _et al_ (2025).[11]</em>
+  <em>Figure 2: Flowchart depiction of the ARC model, reproduced from Yin et al (2025).[11]</em>
 
 </p>
 
@@ -76,7 +76,7 @@ This approach demonstrates impressive performance in validation. Using archetype
 <p align="center">
   <img src="/images/Zerah et al.png" width="50%" alt="PROSAIL-VAE">
   <br>
-  <em>Figure 1: Architecture diagram of the PROSAIL-VAE model, reproduced from Zérah _et al._ (2024).[14]</em>
+  <em>Figure 1: Architecture diagram of the PROSAIL-VAE model, reproduced from Zérah et al. (2024).[14]</em>
 
 </p>
 
