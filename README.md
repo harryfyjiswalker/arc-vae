@@ -37,7 +37,7 @@
 
 The regular and accurate elucidation of crop biophysical parameters is essential for crop trait and health monitoring, phenotyping, crop yield prediction, and precision agriculture more generally.[1][2] Leaf chlorophyll content ($C_{ab}$), for example, is an effective of indicator of stresses such as nitrogen deficiency.[3] Similarly, leaf area index (LAI) provides insight into ecological processes such as photosynthesis and evapotranspiration [2], while peak seasonal LAI exhibits a strong relationship with end-of-season yield.[4]
 
-#### 2.1.1 Radiative Transfer Models
+#### 2.1.1 Radiative Transfer Models and Challenges
 
 <p align="center">
   <img src="/images/PROSAIL_flow1.png" width="50%" alt="PROSAIL flow">
