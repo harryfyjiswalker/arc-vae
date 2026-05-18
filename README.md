@@ -52,7 +52,7 @@ Among the most widely used RTMs is the PROSAIL model (Figure 1), which couples t
 
 However, the practical utility of PROSAIL and other RTMs in large-scale monitoring applications has traditionally been limited by  both the ill-posed nature of RTM parameter estimation from earth observation data  - inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality) - and the computational intensity of inversion (Verrelst et al., 2025).[11][12][13] 
 
-Recent work by Yin _et al._ (2025) addresses the former
+Recent work by Yin _et al._ (2025) addresses the former through the Archetypal Crop Trait Dynamics (ARC) model, which
 
 ### 2.2 Challenges 
 
