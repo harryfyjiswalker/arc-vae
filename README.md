@@ -103,7 +103,7 @@ We report performance on both synthetic and real data
 
 #### 3.2.1 Performance on Simulated S2 Reflectance
 
-Table 1 
+<div align="center">
 
 | Parameter | ARC-VAE R² | ARC R² | ARC-VAE RMSE | ARC RMSE |
 |:----------|--------:|--------:|----------:|----------:|
@@ -121,6 +121,11 @@ Table 1
 | $h_{end}$     | 0.2596 | **0.6670†** | 21.0970 | **14.1479†** |
 
 † Best value for that metric within the row.
+
+</div>
+
+
+
 #### 3.2.2 Performance on Ground Truth Data
 
 
