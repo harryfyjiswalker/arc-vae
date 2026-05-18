@@ -96,7 +96,7 @@ The ARC-VAE architecture consists of a transformer-based encoder and frozen ARC 
 
 #### 3.1.1 Input Representation and Encoder
 
-Each observation $t$ consists of 10-band surface reflectance $**r_t** \in \mathbb{R}^10$, viewing geometry $**a_t** \in \mathbb{R}^3$ (solar zenith, view zenith, relative azimuth), and calendar day-of-year $DOY_t$. The reflectance and angles are normalised by fixed band-wise constants to ensure stable training, concatenated into a 13-dimensional feature vector, and projected to $d_{model} = 128$ dimensional latent space via a linear layer to yield token $**u**_t$. 
+Each observation $t$ consists of 10-band surface reflectance $**r_t**$ $\in$ $\mathbb{R}^10$, viewing geometry $**a_t**$ $\in$ $\mathbb{R}^3$ (solar zenith, view zenith, relative azimuth), and calendar day-of-year $DOY_t$. The reflectance and angles are normalised by fixed band-wise constants to ensure stable training, concatenated into a 13-dimensional feature vector, and projected to $d_{model} = 128$ dimensional latent space via a linear layer to yield token $**u**_t$. 
 
 
 A linear layer projects this feature vector in a 
