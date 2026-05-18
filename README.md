@@ -104,12 +104,19 @@ Reflectance and angular variables are normalised using fixed band-wise constants
 
 The encoder consists of four pre-norm Transformer layers. Each layer applies multi-head self-attention with four heads and key dimension $d_k = 32$, followed by a position-wise feed-forward network with hidden dimension $d_{\text{ff}} = 256$ and ReLU activation. Residual connections are used throughout. Self-attention is computed only over valid (non-padded) positions via the observation mask. The output is a contextualised sequence representation $\mathbf{H} \in R^{Tx128}$, where each token aggregates information across all valid observations in the time series.
 
-Instead of global pooling, we introduce parameter-specific cross-attention, where we define eleven learnable query vectors $\mathbf{Q_j} \in R^{128}$, each corresponding to one ARC parameter. These queries attend over $\mathbf{H}$ to produce parameter-specific context vectors $\mathbf{C_j} \in R^{128}$. 
+Instead of global pooling, we introduce parameter-specific cross-attention, where we define eleven learnable query vectors $\mathbf{Q_j} \in R^{128}$, each corresponding to one ARC parameter. These queries attend over $\mathbf{H}$ to produce parameter-specific context vectors $\mathbf{C_j} \in R^{128}$. The motivation here is to allow each parameter to selectively weight the observations most informative for its estimation. For example, the query for $h_{end}$ can attend to late-season observations constraining senescence timing, while the query for $p_{LAI} attends to peak-canopy observations. 
 
-The motivation here is to allow each parameter to focus on the most relevant parts of the season. For example, senscence related parameters can attend more strongly to late-season observations, while LAI-related parameters may focus on peak growing season reflectance.
+Each context vector is then mapped to a posterior mean and log-standard deviation via a linear prediction head, with outputs constrained to valid physiological ranges:
+
+$\mu_j = z_{\text{lo},j} + \sigma(\mathbf{w}j^\mu \cdot \mathbf{C}j + b_j^\mu),(z{\text{hi},j} - z{\text{lo},j})$.
+
+The encoder defines a factorised posterior over parameters:
+
+$q(\mathbf{z}|\mathbf{x}) = \prod_{j=1}^{11} \mathcal{TN}(\mu_j, \sigma_j; z_{\text{lo},j}, z_{\text{hi},j})$,
 
 #### 3.1.3 Decoder
 
+The ARC decoder is identical to the deterministic ARC forward model and is kept fixed during training.
 
 
 ### 3.2 Methodology and Results
