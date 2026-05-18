@@ -42,7 +42,7 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 <p align="center">
   <img src="/images/PROSAIL_flow1.png" width="50%" alt="PROSAIL flow">
   <br>
-  <em>Figure 1: Flowchart depiction of the PROSAIL model.[14].</em>
+  <em>Figure 1: Flowchart depiction of the PROSAIL model, reproduced from Zérah (2024).[14]</em>
 
 </p>
 
@@ -54,11 +54,20 @@ However, the practical utility of PROSAIL and other RTMs in monitoring applicati
 
 #### 2.1.2 Archetypal Crop Trait Dynamics (ARC)
 
+<p align="center">
+  <img src="/images/ARC_model.jpg" width="50%" alt="ARC">
+  <br>
+  <em>Figure 2: Flowchart depiction of the ARC model, reproduced from Yin _et al_ (2025).[11]</em>
+
+</p>
+
 The Archetypal Crop Trait Dynamics (ARC) model, recently developed by Yin _et al._ (2025), addresses challenges of equfinality and phenological development by assuming that:[11]
 - biophysical parameters vary smoothly over the growing season; and,
 - the smooth function that represents the variation of a biophysical parameter over a season  for a given crop in a given field can be approximated by a transformation (in terms of magnitude, p, and phenology, h) of the average function (the "archetype") for that crop over many instances.
 
 In practice, ARC operates in two phases (Fig. 2). First, SIAC-corrected Sentinel-2 bidirectional refectance time series are obtained over a large region for pixels covering fields of a given crop. To these, artificial neural network (ANN) emulators of the PROSAIL RTM are applied to obtain time series of seven biophysical parameters (Table 1) for each pixel, which are then matched to a common timeline using peak LAI as a reference point. For each parameter, the median time series over all pixels is then obtained, which constitutes that parameter's "archetype" i.e. its typical seasonal development.
+
+These archetypes are then used to constrain parameter retrieval when the model is applied to a new pixel. 
 
 
 
