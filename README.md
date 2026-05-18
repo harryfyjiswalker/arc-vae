@@ -71,6 +71,12 @@ These archetypes are then used to constrain parameter retrieval when the model i
 
 ### 2.1.3 Variational Autoencoders and PROSAIL-VAE
 
+
+
+
+
+
+
 ARC AND MENSAH
 
 
