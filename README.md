@@ -73,7 +73,11 @@ This approach demonstrates impressive performance in validation. Using archetype
 
 #### 2.1.3 Variational Autoencoders and PROSAIL-VAE
 
-Simultaneously, with res
+Simultaneously, recent physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion. Alongside the popular SNAP biophysical processor developed by the European Space Agency [15], Zerah _et al._ (2024) introduced 
+
+with respect tothe integration of RTM
+
+recent developments in physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion, while enabling significantly 
 
 
 
@@ -195,6 +199,8 @@ EGU General Assembly 2020, ser. EGU2020-5251, Online, 4–8 May 2020.
 [13] Mensah, P., Aderinto, P.V., Yusuf, I.S. and Pretorius, A. (2025) 'Physics informed Transformer-VAE for biophysical parameter estimation: PROSAIL model inversion in Sentinel-2 imagery', arXiv preprint arXiv:2511.10387. Available at: https://arxiv.org/abs/2511.10387.
 
 [14] Zérah, Y., 2024. Biophysical parameter retrieval from Sentinel-2 images using physics-driven deep learning for PROSAIL inversion. Séries Temporelles, 27 October. Available at: https://www.cesbio.cnrs.fr/multitemp/biophysical-parameter-retrieval-from-sentinel-2-images-using-physics-driven-deep-learning-for-prosail-inversion/ [Accessed 18 May 2026].
+
+[15] European Space Agency (n.d.) Biophysical Processor Overview. SNAP Online Help. Available at: https://step.esa.int/main/wp-content/help/versions/13.0.0/snap-toolboxes/eu.esa.opt.opttbx.biophysical/BiophysicalOpOverview.html (Accessed: 18 May 2026).
 
 
 Verrelst, Jochem, Miguel Morata, José Luis García-Soria, Yilin Sun, Jianbo Qi, and Juan Pablo Rivera-Caicedo. 2025. "RTM Surrogate Modeling in Optical Remote Sensing: A Review of Emulation for Vegetation and Atmosphere Applications" Remote Sensing 17, no. 21: 3618. https://doi.org/10.3390/rs17213618
