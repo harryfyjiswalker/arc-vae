@@ -102,24 +102,13 @@ Reflectance and angular variables are normalised using fixed band-wise constants
 
 #### 3.1.2 Transformer Encoder
 
-The encoder consists of four pre-norm Transformer layers. Each layer applies multi-head self-attention with four heads and key dimension $d_k = 32$, followed by a position-wise feed-forward network with hidden dimension $d_{\text{ff}} = 256$ and ReLU activation. Residual connections are used throughout. 
+The encoder consists of four pre-norm Transformer layers. Each layer applies multi-head self-attention with four heads and key dimension $d_k = 32$, followed by a position-wise feed-forward network with hidden dimension $d_{\text{ff}} = 256$ and ReLU activation. Residual connections are used throughout. Self-attention is computed only over valid (non-padded) positions via the observation mask. The output is a contextualised sequence representation $\mathbf{H} \in R^{Tx128}$, where each token aggregates information across all valid observations in the time series.
 
-Self-attention is computed only over valid (non-padded) positions via the observation mask. The output is a contextualised sequence representation 
-$\mathbf{H} \in R^{Tx128}$, 
-where each token aggregates information across all valid observations in the time series.
+Instead of global pooling, we introduce parameter-specific cross-attention, where we define eleven learnable query vectors $\mathbf{Q_j} \in R^{128}$, each corresponding to one ARC parameter. These queries attend over $\mathbf{H}$ to produce parameter-specific context vectors $\mathbf{C_j} \in R^{128}$. 
+
+The motivation here is to allow each parameter to focus on the most relevant parts of the season. For example, senscence related parameters can attend more strongly to late-season observations, while LAI-related parameters may focus on peak growing season reflectance.
 
 #### 3.1.3 Decoder
-
-Instead of global pooling, we use
-
-The reflectance and angles are normalised by fixed band-wise constants to ensure stable training and concatenated into a 13-dimensional feature vector, which is then projected to $d_{model} = 128$ dimensional latent space via a linear layer to yield token **$u_t$**. 
-
-
-A linear layer projects this feature vector in a 
-
-
-
-#### 3.1.1 Input Representation
 
 
 
