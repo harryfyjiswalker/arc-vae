@@ -109,10 +109,10 @@ Table 1
 #### 3.2.2 Performance on Ground Truth Data
 
 
-### 3.3 Video Summary
+## 3.3 Video Summary
 
 
-### 3.4 Environmental Cost Analysis
+## 3.4 Environmental Cost Analysis
 
 
 
