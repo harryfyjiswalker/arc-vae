@@ -50,9 +50,9 @@ The increasing availability of remote sensing data has the potential to enable s
 
 Among the most widely used RTMs is the PROSAIL model (Figure 1), which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models.[6] PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties.[7][8] Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration ($C_{ab}$), and leaf water content ($C_w$) - it has been expanded to incorporate additional variables including dry matter content ($C_m$), leaf mass per area (LMA), brown pigments ($C_{bp}$), total carotenoid content ($C_{cx}$, leaf anthocyanin content ($C_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC).[9][10] SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather than a single leaf.[citation?]
 
-However, the practical utility of PROSAIL and other RTMs in large-scale monitoring applications has traditionally been limited by  both the ill-posed nature of RTM parameter estimation from earth observation data  - inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality) - and the computational intensity of inversion (Verrelst et al., 2025).[11][12][13]
+However, the practical utility of PROSAIL and other RTMs in large-scale monitoring applications has traditionally been limited by  both the ill-posed nature of RTM parameter estimation from earth observation data  - inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality) - and the computational intensity of inversion (Verrelst et al., 2025).[11][12][13] 
 
-
+Recent work by Yin _et al._ (2025) addresses the former
 
 ### 2.2 Challenges 
 
