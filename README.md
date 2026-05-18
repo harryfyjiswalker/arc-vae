@@ -46,12 +46,13 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 
 </p>
 
-The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables, circumventing the need for time-consuming and expensive field studies. Progress has been made in this context via inversion of radiative transfer models (RTMs). RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties.[1][5]
+The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables, circumventing the need for time-consuming and expensive field studies. Radiative transfer models (RTMs), which simulate the spectral and bidrectional reflectance of a crop canopy from its biophysical and biochemical properties, are foundational in this context (Verrelst et al., 2025), as their inversion - that is, reversing the problem to use known bidrectional reflectance data as input - can enable retrieval of these properties.[1][5]
 
-Among the most widely used RTM in this context is the PROSAIL model, which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models.[6] PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties.[7][8] Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration ($C_{ab}$), and leaf water content ($C_w$) - it has been expanded to incorporate additional variables including dry matter content ($C_m$), leaf mass per area (LMA), brown pigments ($C_{bp}$), total carotenoid content ($C_{cx}$, leaf anthocyanin content ($C_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC).[9][10] SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather
-than a single leaf.[citation?]
+Among the most widely used RTMs is the PROSAIL model (Figure 1), which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models.[6] PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties.[7][8] Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration ($C_{ab}$), and leaf water content ($C_w$) - it has been expanded to incorporate additional variables including dry matter content ($C_m$), leaf mass per area (LMA), brown pigments ($C_{bp}$), total carotenoid content ($C_{cx}$, leaf anthocyanin content ($C_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC).[9][10] SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather than a single leaf.[citation?]
 
-However, despite their promise, the practical utility of RTMs in downstream agricultural remote sensing tasks has been constrained by both the ill-posed nature of RTM parameter estimation from earth observation data  - inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality) - and the computational intensity of inversion. [11][12][13]
+However, the practical utility of PROSAIL and other RTMs in large-scale monitoring applications has traditionally been limited by  both the ill-posed nature of RTM parameter estimation from earth observation data  - inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality) - and the computational intensity of inversion (Verrelst et al., 2025).[11][12][13]
+
+
 
 ### 2.2 Challenges 
 
@@ -182,7 +183,7 @@ EGU General Assembly 2020, ser. EGU2020-5251, Online, 4–8 May 2020.
 [14] Zérah, Y., 2024. Biophysical parameter retrieval from Sentinel-2 images using physics-driven deep learning for PROSAIL inversion. Séries Temporelles, 27 October. Available at: https://www.cesbio.cnrs.fr/multitemp/biophysical-parameter-retrieval-from-sentinel-2-images-using-physics-driven-deep-learning-for-prosail-inversion/ [Accessed 18 May 2026].
 
 
-
+Verrelst, Jochem, Miguel Morata, José Luis García-Soria, Yilin Sun, Jianbo Qi, and Juan Pablo Rivera-Caicedo. 2025. "RTM Surrogate Modeling in Optical Remote Sensing: A Review of Emulation for Vegetation and Atmosphere Applications" Remote Sensing 17, no. 21: 3618. https://doi.org/10.3390/rs17213618
 
 
 
