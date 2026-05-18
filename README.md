@@ -88,21 +88,27 @@ For this project, we therefore investigate whether integrating ARC's archetype a
 
 Simultaneously, with respect to the VAE framework, the ARC archetype provides a structured prior over $(p,h)$ -- the posterior distribution of scaling and phenological parameters derived from Sentinel-2 observations -- which naturally replaces the crop- and region-agnostic uniform distributions of Zerah _et al._ and Mensah _et al._ with a physically-grounded, temporally-resolved description of expected canopy dynamics specific to a given crop. Further, the ARC decoder enables extraction of the development trajectory of biophysical parameters over the full growing season rather than for a single snapshot.
 
-ARC AND MENSAH
+## 3. Remote Sensing Technique and Model Architecture
+
+### 3.1 ARC-VAE Architecture
 
 
 
-## 3. Methods
 
-## 3.1 Data & Preprocessing
+### 3.2 Results
+
+#### 3.2.1 Performance on Simulated S2 Reflectance
 
 
+#### 3.2.2 Performance on Validation Data
 
-## 4 Discussion and Results
 
-### 4.1 Comparative Performance on Synthetic Data
+### 3.3 Video Summary
 
-### 4.2 Field Validation
+
+### 3.4 Environmental Cost Analysis
+
+
 
 
 ---
