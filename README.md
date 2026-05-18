@@ -103,6 +103,8 @@ We report performance on both synthetic and real data
 
 #### 3.2.1 Performance on Simulated S2 Reflectance
 
+Table 1 shows the results for 
+
 <div align="center">
 
 | Parameter | ARC-VAE R² | ARC R² | ARC-VAE RMSE | ARC RMSE |
@@ -122,7 +124,19 @@ We report performance on both synthetic and real data
 
 † Best value for that metric within the row.
 
+| Parameter | KNN R² | ENC R² | KNN RMSE | ENC RMSE |
+|:----------|--------:|--------:|----------:|----------:|
+| LAI [m²/m²]      | 0.8541 | 0.8470 | 0.8810 | 0.9025 |
+| Cab [µg/cm²]     | 0.6142 | 0.4069 | 12.3980 | 15.3718 |
+| Cw [g/cm²]       | 0.7162 | 0.7742 | 0.0151 | 0.0135 |
+| Cbrown           | 0.3854 | -0.1069 | 0.1083 | 0.1453 |
+| N                | 0.3014 | 0.2149 | 0.4713 | 0.4996 |
+| Cm [g/cm²]       | 0.4585 | 0.3816 | 0.0054 | 0.0058 |
+| ALA [°]          | 0.4174 | 0.3444 | 7.1926 | 7.6298 |
+
 </div>
+
+
 
 
 
