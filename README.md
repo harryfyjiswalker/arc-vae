@@ -39,14 +39,14 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 
 #### 2.1.1 Radiative Transfer Models
 
-The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables, circumventing the need for time-consuming and expensive field studies. Progress has been made in this context via inversion of radiative transfer models (RTMs). RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties.[1][5]
-
 <p align="center">
   <img src="/images/PROSAIL_flow1.png" width="50%" alt="PROSAIL flow">
   <br>
   <em>Figure 1: Flowchart depiction of the PROSAIL model.[14].</em>
 
 </p>
+
+The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables, circumventing the need for time-consuming and expensive field studies. Progress has been made in this context via inversion of radiative transfer models (RTMs). RTMs simulate the spectral and bidrectional reflectance of a crop canopy based on its biophysical and biochemical properties; inverting these models, using bidirectional reflectance data as input, hence enables retrieval of the crop properties.[1][5]
 
 Among the most widely used RTM in this context is the PROSAIL model, which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models.[6] PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties.[7][8] Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration ($C_{ab}$), and leaf water content ($C_w$) - it has been expanded to incorporate additional variables including dry matter content ($C_m$), leaf mass per area (LMA), brown pigments ($C_{bp}$), total carotenoid content ($C_{cx}$, leaf anthocyanin content ($C_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC).[9][10] SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather
 than a single leaf.[citation?]
