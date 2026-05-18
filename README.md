@@ -80,7 +80,7 @@ This approach demonstrates impressive performance in validation. Using archetype
 
 </p>
 
-Simultaneously, recent physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion. Alongside the popular SNAP biophysical processor developed by the European Space Agency [15], Zerah _et al._ (2024) introduced PROSAIL-VAE, which embeds a differentiable PROSAIL decoder into a variational autoencoder. The authors train the model on Sentinel-2 imagery from fourteen western European tiles without requiring ground-truth biophysical labels, achieving probabilistic inversion of all PROSAIL parameters with LAI accuracy rivalling SNAP.[14] Mensah _et al._ (2025) then demonstrated that an equivalent Transformer-VAE trained exclusively on PROSAIL-simulated data achieves comparable LAI retrieval accuracy (RMSE 0.99 vs 1.16 for PROSAIL-VAE across all test sites), substantially reducing the data requirements of the hybrid approach.[13] However, these approaches involve single-date inversion, limiting their utility in downstream tasks such as yield prediction. Further, the models of both Zerah _et al._ and Mensah _et al._ employ independent uniform distributions within physiological bounds as the prior, which constrains parameters to plausible ranges but encodes no crop- or region-specific information.
+Simultaneously, recent physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion. Alongside the popular SNAP biophysical processor developed by the European Space Agency [15], Zerah _et al._ (2024) introduced PROSAIL-VAE, which embeds a differentiable PROSAIL decoder into a variational autoencoder. The authors train the model on Sentinel-2 imagery from fourteen western European tiles without requiring ground-truth biophysical labels, achieving probabilistic inversion of all PROSAIL parameters with LAI accuracy rivalling SNAP.[14] Mensah _et al._ (2025) then demonstrated that an equivalent Transformer-VAE trained exclusively on PROSAIL-simulated data achieves comparable LAI retrieval accuracy (RMSE 0.99 vs 1.16 for PROSAIL-VAE across all test sites), substantially reducing the data requirements of the hybrid approach.[13] However, these approaches involve single-date inversion, limiting their utility in downstream tasks such as yield prediction that benefit from richer phenological data. Further, the models of both Zerah _et al._ and Mensah _et al._ employ independent uniform distributions within physiological bounds as the prior, which constrains parameters to plausible ranges but encodes no crop- or region-specific information.
 
 ### 2.2. ARC-VAE
 
@@ -105,6 +105,20 @@ We report performance on both synthetic and real data
 
 Table 1 
 
+| Parameter | ENC R² | ENC RMSE |  | KNN R² | KNN RMSE |
+|:----------|--------:|----------:|:-:|--------:|----------:|
+| p_N       | 0.2579 | 0.2257 | **│** | 0.2374 | 0.2288 |
+| p_Cab     | 0.4568 | 0.1507 | **│** | 0.4774 | 0.1478 |
+| p_Cm      | 0.1133 | 0.7332 | **│** | 0.2925 | 0.6549 |
+| p_Cw      | 0.8398 | 0.3637 | **│** | 0.6418 | 0.5439 |
+| p_LAI     | 0.8751 | 0.2484 | **│** | 0.8009 | 0.3136 |
+| p_ALA     | 0.3498 | 0.1134 | **│** | 0.3022 | 0.1175 |
+| p_Cbrown  | -0.0478 | 0.5552 | **│** | 0.0084 | 0.5402 |
+| **━━━━━━━━━━** | **━━━━━━━━━━** | **━━━━━━━━━━** |  | **━━━━━━━━━━** | **━━━━━━━━━━** |
+| h_growth  | -0.8305 | 0.1093 | **│** | 0.2927 | 0.0679 |
+| h_start   | 0.5804 | 11.2142 | **│** | 0.8479 | 6.7524 |
+| h_senes   | -0.0576 | 0.1068 | **│** | 0.3055 | 0.0866 |
+| h_end     | 0.2596 | 21.0970 | **│** | 0.6670 | 14.1479 |
 
 #### 3.2.2 Performance on Ground Truth Data
 
