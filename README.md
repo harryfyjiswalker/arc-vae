@@ -92,7 +92,18 @@ Simultaneously, with respect to the VAE framework, the ARC archetype provides a 
 
 ### 3.1 ARC-VAE Architecture
 
-The ARC-VAE architecture consists of a transformer-based encoder and frozen ARC decoder. The encoder maps a variable-length time series of $T$ cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $R^7$ are biophysica
+The ARC-VAE architecture consists of a transformer-based encoder and frozen ARC decoder. The encoder maps a variable-length time series of $T$ cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $\mathbb{R}^7$ are biophysical scaling parameters and **h** $\in$ $\mathbb{R}^4$ are phenological timing parameters. At inference, the posterior mean $**\mu**$ is used as a point estimate, allowing for mapping from the observed time series to a full seasonal biophysical parameter trajectory in a single forward pass.
+
+#### 3.1.1 Input Representation and Encoder
+
+Each observation $t$ consists of 10-band surface reflectance $**r_t** \in \mathbb{R}^10$, viewing geometry $**a_t** \in \mathbb{R}^3$ (solar zenith, view zenith, relative azimuth), and calendar day-of-year $DOY_t$. The reflectance and angles are normalised by fixed band-wise constants to ensure stable training, before being concatenated into a 13-dimensional feature vector, projected to $d_{model} = 128$ via a linear layer to give token $**u**_t$. 
+
+
+A linear layer projects this feature vector in a 
+
+
+
+#### 3.1.1 Input Representation
 
 
 
