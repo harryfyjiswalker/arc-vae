@@ -214,6 +214,12 @@ The supervised loss is applied throughout training with weight $\lambda_{\text{s
 
 The encoder contains 619,414 trainable parameters, while the decoder is fully deterministic and contains no learnable parameters.
 
+#### 3.6.7
+
+At inference, ...
+
+[Discuss sentinel-2 stuff]
+
 ### 4. Results and Comparison to ARC
 
 #### 4.1 Performance on Synthetic Test Data
