@@ -227,14 +227,18 @@ We perform initial comparative analysis of ARC-VAE and ARC on synthetic test dat
 
 </div>
 
-##### 4.1.1 Biophysical Parameter Time Series Reconstruction
+##### 4.1.1 Biophysical Parameter Time Series and Latent Variable Reconstruction
+
+In terms of biophysical parameter reconstruction, our results (Table 2) suggest that ARC-VAE can rival ARC on synthetic data. ARC-VAE exhibits superior $R^2$ and RMSE for five of seven biophysical parameters; notable gains are observed for nitrogen and water content elucidation (N and $C_w$, respectively), while performance on LAI, $C_m$, and ALA is very similar between the two models. By contrast, ARC slightly outperforms ARC-VAE on $C_{ab}$ reconstruction, and shows significantly superior performance for $C_{\text{brown}}$.
 
 <p align="center">
   <img src="/images/BioParamRecon.png" width="30%" alt="PROSAIL flow">
   <br>
-  <em>Table 2. Latent variable reconstruction performance.</em>
+  <em>Table 2. Biophysical parameter reconstruction performance.</em>
 
 </p>
+
+However, plotting the median time series for each parameter (Figure 4) suggests that these metrics do not capture the whole picture. ARC-VAE appears more severely overstimate LAI, N, and $C_m$ in the peak season than ARC. Similarly, the model underestimates ALA during this period, compared to a more accurate reconstruction by ARC. Errors also emerge in the green-up and senescence period, with ARC-VAE suffering from positive bias in the early and late season for $C_{ab}$, $N$, and $C_m$. 
 
 <p align="center">
   <img src="/images/synthetic_comparison.png" width="80%" alt="PROSAIL flow">
@@ -243,8 +247,8 @@ We perform initial comparative analysis of ARC-VAE and ARC on synthetic test dat
 
 </p>
 
+Some insight into these failure modes can be gleaned from reconstruction accuracy of the **(p,h)** latent variables (Table 3). ARC-VAE outperforms ARC across all magnitude parameters **$p$**, while the opposite occurs for the phenological timing parameters **$h$**. Most striking is the VAE model's complete failure to capture the parameters defining green-up and senescence ($h_{\text{growth}}$ and $h_{\text{senes}}$, respectively), which may explain its difficulties in faithfully capturing trajectories early and late in the season. 
 
-##### 4.1.2 Latent Variable Reconstruction
 
 <p align="center">
   <img src="/images/LatentVariableRecon.png" width="30%" alt="PROSAIL flow">
@@ -254,6 +258,8 @@ We perform initial comparative analysis of ARC-VAE and ARC on synthetic test dat
 </p>
 
 ##### 4.1.3 Performance as a function of number of observations
+
+Given 
 
 #### 4.2 Performance on MNI Field Data
 
