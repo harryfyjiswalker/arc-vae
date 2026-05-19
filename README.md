@@ -122,30 +122,55 @@ The ARC decoder is identical to the deterministic ARC forward model and is kept 
    1. A double-logistic phenological curve is evaluated over a 365-day calendar year
    2. The curve is inverted using a pre-computed lookup table to obtain archetype time $\tau \in [0, 365]$ for each observation date
    3. A canonical seasonal trajectory $\mathbf{a}(\tau) \in \mathbb{R}^7$ is obtained via linear interpolation from a stored 365-day reference table
-   4. Canopy state variables are computed via the archetype model as $\hat{x}_{\text{canopy}}(t) =p \cdot a\!\left(\mathcal{T}^{-1}(t_0, h \rightarrow h_0)\right)$
+   4. Canopy state variables are computed via the archetype model as $\hat{x}_{\text{canopy}}(t) =p \cdot a\\left(\mathcal{T}^{-1}(t_0, h \rightarrow h_0)\right)$
    5. The resulting canopy state and geometry are passed through a frozen PROSAIL neural network emulator to predict reflectance: $\hat{\mathbf{r}} \in \mathbb{R}^{T \times 10}$.
 
 #### 3.1.4 Training objective
 
+## Training objective
+
 The model is trained using a composite objective:
 
-$\mathcal{L} = \mathcal{L}_{\mathrm{rec}} + \beta \mathcal{L}_{\mathrm{KL}} + \lambda_{\mathrm{sup}} \mathcal{L}_{\mathrm{sup}}$.
+```math
+\mathcal{L}
+=
+\mathcal{L}_{\mathrm{rec}}
++
+\beta \mathcal{L}_{\mathrm{KL}}
++
+\lambda_{\mathrm{sup}} \mathcal{L}_{\mathrm{sup}}
+```
 
 The reconstruction loss $\mathcal{L}_{\mathrm{rec}}$ is a heteroscedastic mean squared error over reflectance predictions. The KL divergence term is defined as
 
-$\mathcal{L}_{\mathrm{KL}} = \mathrm{KL}\left[\mathcal{TN}(\mu, \sigma)\,\|\,\mathcal{TN}(\mu_{\mathrm{prior}}, \sigma_{\mathrm{prior}})\right]$,
+```math
+\mathcal{L}_{\mathrm{KL}}
+=
+\mathrm{KL}
+\left[
+\mathcal{TN}(\mu, \sigma)
+\,\|\, 
+\mathcal{TN}(\mu_{\mathrm{prior}}, \sigma_{\mathrm{prior}})
+\right]
+```
 
 and is estimated via Monte Carlo sampling.
 
 The supervised regularization term enforces consistency with known latent parameters:
 
-$\mathcal{L}_{\mathrm{sup}} =
+```math
+\mathcal{L}_{\mathrm{sup}}
+=
 \frac{1}{11}
 \sum_j
 \left(
-\frac{\mu_j - z_{\mathrm{true},j}}
-{z_{\mathrm{hi},j} - z_{\mathrm{lo},j}}
-\right)^2$.
+\frac{
+\mu_j - z_{\mathrm{true},j}
+}{
+z_{\mathrm{hi},j} - z_{\mathrm{lo},j}
+}
+\right)^2
+```
 
 #### 3.1.5 Training Protocol
 
