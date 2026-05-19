@@ -267,20 +267,9 @@ Some insight into these failure modes can be gleaned from reconstruction accurac
 
 ##### 4.1.3 Performance as a function of number of observations
 
-The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ suggests that the model may struggle when the full set of seasonal observations are not available to constrain start and end dates, potentially severely limiting its utility where cloud cover is high. We therefore compare the LAI reconstruction $R^2$ and RMSE of ARC-VAE compared to ARC as a function of the number of observations.
+The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ suggests that the model may struggle when the full set of seasonal observations are not available to constrain start and end dates, potentially severely limiting its utility where cloud cover is high. We therefore compare the LAI reconstruction $R^2$ and RMSE of ARC-VAE compared to ARC as a function of the number of observations (Figure 5).
 
 #### 4.2 Performance on MNI Field Data
-
-
-
-
-
-We report performance on both synthetic and real data
-
-#### 3.2.1 Performance on Simulated S2 Reflectance
-
-
-
 
 
 ## 5. Video Summary
@@ -288,53 +277,32 @@ We report performance on both synthetic and real data
 
 ## 6. Environmental Cost Analysis
 
+We consider that the main sources of energy usage and emissions in this project result from: data generation, training, and inference; generative AI usage; and Sentinel-2 data extraction. 
+
+### 6.1 Computational Energy Cost and Carbon Footprint
+
+#### 6.1.1 Synthetic Data Generation, Training, and Inference
+
+| Phase | Duration | Energy (Wh) | Carbon (g CO₂eq) |
+|---|---:|---:|---:|
+| Synthetic data generation | 18m 34s | 15.5 | 7.36 |
+| ARC-VAE training | 4h 03m 24s | 202.8 | 96.35 |
+| ARC-VAE inference | 0.04 s | 0.0006 | 0.0003 |
+| ARC-KNN retrieval | 52m 44s | 43.95 | 20.88 |
+| **Total project** | **5h 14m 42s** | **262.3** | **124.59** |
+
+Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab.
+
+#### 6.1.2 Generative AI Usage
 
 
-Timing:
-  Data generation:  0:18:34
-  Training:         04h 03m 24s  (14605s total)
-  Per epoch:        292.1s
+#### 6.1.3 Validation Data Acquisition
 
-Final losses:
-  val_rec:   10.8836
-  val_kl:    17.1072
-  train_sup: 0.041017  (was 0.086989 at epoch 1)
+The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the European Space Agency Copernicus programme using the Sentinel-2 mission, which involves substantial upfront environment expenditure associated with satellite manufacturing, launch, and long-term mission operations. Similarly, agricultural field campaign sites such as Munich-North-Isar require manufacture of specialised sensing instruments, repeated technician travel, and long-term site maintenance. However, both of these costs are amortised across large numbers of observations, users, and downstream applications and are thus considered negligible with respect to this project. As a result, for model validation, the primary costs are the extraction of the relevant Sentinel-2 scenes from the Amazon Web Services API and inference of the ARC-VAE and ARC models on these scenes.
 
-Carbon cost (training only):
-  GPU:              Tesla T4  (~50W avg)
-  Energy consumed:  202.8 Wh  (0.2028 kWh)
-  CodeCarbon est:   95.05 gCO₂eq  (0.09505 kg)
-  Conservative est: 96.35 gCO₂eq  (0.09635 kg)  [global avg grid, 475 gCO₂/kWh]
-  Note: Colab runs on Google GCP which matches 100% renewables
-        via RECs. Real-time carbon-free energy fraction ~75%.
-        Conservative figure above is a worst-case upper bound.
+... Quantify this
 
-
-   === CARBON + ENERGY SUMMARY ===
-
-GPU power used (assumed): 50 W
-Encoder runtime: 0.04s
-KNN runtime: 3164.23s
-
---- Energy (model-based estimate) ---
-VAE energy: 0.0006 Wh
-KNN energy: 43.9477 Wh
-
---- Carbon emissions (gCO₂e) ---
-VAE carbon:  0.0003 g
-KNN carbon:  20.8751 g
-TOTAL:       20.8754 g
-
---- CodeCarbon (if captured) ---
-VAE CodeCarbon: 0.002634217969426118 g
-KNN CodeCarbon: 10.116406758341983 g
-
---- Speed / Efficiency ---
-Encoder: 1.358 ms/pixel
-KNN:     98.882 s/pixel
-Speedup: 72809.28×
-
-
+### Environmental Benefits
 
 ---
 
