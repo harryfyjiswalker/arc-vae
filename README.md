@@ -216,6 +216,8 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 #### 4.1 Performance on Synthetic Test Data
 
+##### 4.1.1 Biophysical Parameter Time Series Reconstruction
+
 <p align="center">
   <img src="/images/synthetic_comparison.png" width="80%" alt="PROSAIL flow">
   <br>
@@ -223,6 +225,12 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 </p>
 
+
+##### 4.1.2 Latent Variable Reconstruction
+
+
+
+##### 4.1.3 Performance as a function of number of observations
 
 #### 4.2 Performance on MNI Field Data
 
