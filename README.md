@@ -216,7 +216,12 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 #### 4.1 Performance on Synthetic Test Data
 
-We compare 
+<p align="center">
+  <img src="/images/synthetic_comparison.png" width="50%" alt="PROSAIL flow">
+  <br>
+  <em>Figure 4. Comparison of ARC-VAE and ARC time series reconstructions.</em>
+
+</p>
 
 
 #### 4.2 Performance on MNI Field Data
