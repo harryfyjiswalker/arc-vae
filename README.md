@@ -216,6 +216,13 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 #### 4.1 Performance on Synthetic Test Data
 
+We perform initial comparative analysis of ARC-VAE and ARC on synthetic test data (32 samples), investigating reconstruction of both the biophysical parameter time series and latent **(p,h)** variables. The total inference time and inference time per pixel are reported in Table 2 below, showing an acceleration of approximately $7 x 10^4$ of ARC VAE compared to ARC at inference.
+
+| Method | Total Time (s) | Time per Pixel (s) |
+|--------|----------------|---------------------|
+| Encoder (ARC-VAE) | 0.04 | 0.00136 |
+| ARC-KNN | 3164.00 | 98.90 |
+
 ##### 4.1.1 Biophysical Parameter Time Series Reconstruction
 
 <p align="center">
