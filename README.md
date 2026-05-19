@@ -106,15 +106,39 @@ The encoder consists of four pre-norm Transformer layers. Each layer applies mul
 
 Instead of global pooling, we introduce parameter-specific cross-attention, where we define eleven learnable query vectors $\mathbf{Q_j} \in R^{128}$, each corresponding to one ARC parameter. These queries attend over $\mathbf{H}$ to produce parameter-specific context vectors $\mathbf{C_j} \in R^{128}$. The motivation here is to allow each parameter to selectively weight the observations most informative for its estimation. For example, the query for $h_{end}$ can attend to late-season observations constraining senescence timing, while the query for $p_{LAI} attends to peak-canopy observations. 
 
-Each context vector is then mapped to a posterior mean and log-standard deviation via a linear prediction head, with outputs constrained to valid physiological ranges:
+Each context vector is then mapped to a posterior mean and log-standard deviation via dedicated prediction heads, with outputs constrained to physiological bounds:
 
-$\mu_j = z_{\text{lo},j} + \sigma(\mathbf{w}j^\mu \cdot \mathbf{C}j + b_j^\mu),(z{\text{hi},j} - z{\text{lo},j})$.
+```math
+\mu_j
+=
+z_{\mathrm{lo},j}
++
+\sigma
+\left(
+\mathbf{w}_j^\mu \cdot \mathbf{C}_j + b_j^\mu
+\right)
+\cdot
+\left(
+z_{\mathrm{hi},j} - z_{\mathrm{lo},j}
+\right)
+```
 
-The encoder defines a factorised posterior over parameters:
+The full encoder output defines the posterior
 
-$q(\mathbf{z}|\mathbf{x}) = \prod_{j=1}^{11} \mathcal{TN}(\mu_j, \sigma_j; z_{\text{lo},j}, z_{\text{hi},j})$,
+```math
+q(\mathbf{z} \mid \mathbf{x})
+=
+\prod_{j=1}^{11}
+\mathcal{TN}
+\left(
+\mu_j,\,
+\sigma_j;\,
+z_{\mathrm{lo},j},\,
+z_{\mathrm{hi},j}
+\right)
+```
 
-i.e. eleven independent truncated normal distributions. Samples are generated using an inverse-CDF reparameterisation to ensure differentiability.
+as 11 independent truncated normal distributions. Samples are drawn via the inverse-CDF reparameterisation trick to maintain differentiability.
 
 #### 3.1.3 Decoder
 
