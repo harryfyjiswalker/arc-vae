@@ -259,7 +259,7 @@ Some insight into these failure modes can be gleaned from reconstruction accurac
 
 ##### 4.1.3 Performance as a function of number of observations
 
-Given 
+The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ suggests that the model may struggle when the full set of seasonal observations are not available to constrain start and end dates, potentially severely limiting its utility where cloud cover is high. We therefore compare the LAI reconstruction $R^2$ and RMSE of ARC-VAE compared to ARC as a function of the number of observations.
 
 #### 4.2 Performance on MNI Field Data
 
