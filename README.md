@@ -114,6 +114,8 @@ The encoder defines a factorised posterior over parameters:
 
 $q(\mathbf{z}|\mathbf{x}) = \prod_{j=1}^{11} \mathcal{TN}(\mu_j, \sigma_j; z_{\text{lo},j}, z_{\text{hi},j})$,
 
+i.e. eleven independent truncated normal distributions. Samples are generated using an inverse-CDF reparameterisation to ensure differentiability.
+
 #### 3.1.3 Decoder
 
 The ARC decoder is identical to the deterministic ARC forward model and is kept fixed during training.
