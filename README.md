@@ -208,7 +208,7 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 #### 4.1 Performance on Synthetic Test Data
 
-
+We compare 
 
 
 #### 4.2 Performance on MNI Field Data
@@ -262,6 +262,30 @@ Table 1 shows the results for
 
 ## 6. Environmental Cost Analysis
 
+Training cost:
+
+============================================================
+TRAINING COMPLETE
+============================================================
+
+Timing:
+  Data generation:  0:18:34
+  Training:         04h 03m 24s  (14605s total)
+  Per epoch:        292.1s
+
+Final losses:
+  val_rec:   10.8836
+  val_kl:    17.1072
+  train_sup: 0.041017  (was 0.086989 at epoch 1)
+
+Carbon cost (training only):
+  GPU:              Tesla T4  (~50W avg)
+  Energy consumed:  202.8 Wh  (0.2028 kWh)
+  CodeCarbon est:   95.05 gCO₂eq  (0.09505 kg)
+  Conservative est: 96.35 gCO₂eq  (0.09635 kg)  [global avg grid, 475 gCO₂/kWh]
+  Note: Colab runs on Google GCP which matches 100% renewables
+        via RECs. Real-time carbon-free energy fraction ~75%.
+        Conservative figure above is a worst-case upper bound.
 
 
 
