@@ -1,5 +1,4 @@
-# Physics-Informed Deep Learning for Efficient Extraction of Biophysical Parameter Time Series
-### GEOL0069 – Artificial Intelligence for Earth Observation | Final Project
+# GEOL0069 Final Project: Physics-Informed Deep Learning for Efficient Extraction of Biophysical Parameter Time Series
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1zC4AWfp0Af7_LH2F_ZHQNeYrFT6Oe19A)
 
