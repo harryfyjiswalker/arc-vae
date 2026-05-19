@@ -118,12 +118,51 @@ i.e. eleven independent truncated normal distributions. Samples are generated us
 
 #### 3.1.3 Decoder
 
-The ARC decoder is identical to the deterministic ARC forward model and is kept fixed during training.
+The ARC decoder is identical to the deterministic ARC forward model and is kept fixed during training. Given sampled parameters $(\mathbf{p}, \mathbf{h})$, observation DOYs, viewing geometry, and soil parameters, the decoder proceeds as follows:
+   1. A double-logistic phenological curve is evaluated over a 365-day calendar year
+   2. The curve is inverted using a pre-computed lookup table to obtain archetype time $\tau \in [0, 365]$ for each observation date
+   3. A canonical seasonal trajectory $\mathbf{a}(\tau) \in \mathbb{R}^7$ is obtained via linear interpolation from a stored 365-day reference table
+   4. Canopy state variables are computed via the archetype model as $\hat{x}_{\text{canopy}}(t) =p \cdot a\!\left(\mathcal{T}^{-1}(t_0, h \rightarrow h_0)\right)$
+   5. The resulting canopy state and geometry are passed through a frozen PROSAIL neural network emulator to predict reflectance: $\hat{\mathbf{r}} \in \mathbb{R}^{T \times 10}$.
+
+#### 3.1.4 Training objective
+
+The model is trained using a composite objective:
+
+$\mathcal{L} = \mathcal{L}_{\mathrm{rec}} + \beta \mathcal{L}_{\mathrm{KL}} + \lambda_{\mathrm{sup}} \mathcal{L}_{\mathrm{sup}}$.
+
+The reconstruction loss $\mathcal{L}_{\mathrm{rec}}$ is a heteroscedastic mean squared error over reflectance predictions. The KL divergence term is defined as
+
+$\mathcal{L}_{\mathrm{KL}} = \mathrm{KL}\left[\mathcal{TN}(\mu, \sigma)\,\|\,\mathcal{TN}(\mu_{\mathrm{prior}}, \sigma_{\mathrm{prior}})\right]$,
+
+and is estimated via Monte Carlo sampling.
+
+The supervised regularization term enforces consistency with known latent parameters:
+
+$\mathcal{L}_{\mathrm{sup}} =
+\frac{1}{11}
+\sum_j
+\left(
+\frac{\mu_j - z_{\mathrm{true},j}}
+{z_{\mathrm{hi},j} - z_{\mathrm{lo},j}}
+\right)^2$.
+
+#### 3.1.5 Training Protocol
+
+We train the model on 200,000 samples (of masked? synthetic? data - be precise here) Sentinel-2 reflectance observations using a T4 GPU in Google Colab. Training proceeds over two stages, comprising a total of 50 epochs. In the first stage (20 epochs), $\beta = 0$, enabling pure reconstruction learning. In the second stage (30 epochs), $\beta$ is linearly annealed from 0 to 0.3 to gradually regularise the posterior towards the prior distribution. 0.3 is chosen because... The supervised loss is applied throughout training with weight $\lambda_{\text{sup}} = 10.0$. We find that this aids in prevention of degenerate solutions where reflectance sensitivity is weak (e.g. during periods of LAI saturation). The encoder contains 619,414 trainable parameters, while the decoder is fully deterministic and contains no learnable parameters.
+
+### 4. Results and Comparison to ARC
+
+#### 4.1 Performance on Synthetic Test Data
 
 
-### 3.2 Methodology and Results
 
-We train the model on 200,000 synthetic, masked Sentinel-2 reflectance observations using a T4 GPU in Google Colab. Training takes 5 hours. A 10,000 validation set is used to calculate the ELBO. We find that beta = 0.3 avoids posterior collapse vs etc.? Model performance is benchmarked against ARC.
+
+#### 4.2 Performance on MNI Field Data
+
+
+
+
 
 We report performance on both synthetic and real data
 
@@ -165,14 +204,10 @@ Table 1 shows the results for
 
 
 
-
-#### 3.2.2 Performance on Ground Truth Data
-
-
-## 3.3 Video Summary
+## 5. Video Summary
 
 
-## 3.4 Environmental Cost Analysis
+## 6. Environmental Cost Analysis
 
 
 
