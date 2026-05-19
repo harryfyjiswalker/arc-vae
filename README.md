@@ -228,7 +228,12 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 ##### 4.1.2 Latent Variable Reconstruction
 
+<p align="center">
+  <img src="/images/LatentVariableRecon.png" width="60%" alt="PROSAIL flow">
+  <br>
+  <em>Table 2. Latent variable reconstruction performance.</em>
 
+</p>
 
 ##### 4.1.3 Performance as a function of number of observations
 
