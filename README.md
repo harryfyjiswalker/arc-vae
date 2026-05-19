@@ -230,6 +230,13 @@ We perform initial comparative analysis of ARC-VAE and ARC on synthetic test dat
 ##### 4.1.1 Biophysical Parameter Time Series Reconstruction
 
 <p align="center">
+  <img src="/images/BioParamRecon.png" width="30%" alt="PROSAIL flow">
+  <br>
+  <em>Table 2. Latent variable reconstruction performance.</em>
+
+</p>
+
+<p align="center">
   <img src="/images/synthetic_comparison.png" width="80%" alt="PROSAIL flow">
   <br>
   <em>Figure 4. Comparison of ARC-VAE and ARC time series reconstructions.</em>
@@ -242,7 +249,7 @@ We perform initial comparative analysis of ARC-VAE and ARC on synthetic test dat
 <p align="center">
   <img src="/images/LatentVariableRecon.png" width="30%" alt="PROSAIL flow">
   <br>
-  <em>Table 2. Latent variable reconstruction performance.</em>
+  <em>Table 3. Latent variable reconstruction performance.</em>
 
 </p>
 
