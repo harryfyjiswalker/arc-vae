@@ -274,7 +274,7 @@ The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ su
 We validate model performance on real world data using the Munich-North-Isar dataset, which includes LAI measurements for various fields for 2017 and 2018. NB specify dates. [It has the addded advantage of not requiring pre-specified growing season dates, which may be beneficial for larger scale mapping.]
 
 <p align="center">
-  <img src="/images/Field Validation Results1.png" width="30%" alt="PROSAIL flow">
+  <img src="/images/Field Validation Results1.png" width="60%" alt="PROSAIL flow">
   <br>
   <em>Table 3. Latent variable reconstruction performance.</em>
 
