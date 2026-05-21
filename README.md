@@ -271,6 +271,14 @@ The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ su
 
 #### 4.2 Performance on MNI Field Data
 
+We validate model performance on real world data using the Munich-North-Isar dataset, which includes LAI measurements for various fields for 2017 and 2018. NB specify dates.
+
+<p align="center">
+  <img src="/images/Field Validation Results.png" width="30%" alt="PROSAIL flow">
+  <br>
+  <em>Table 3. Latent variable reconstruction performance.</em>
+
+</p>
 
 ## 5. Video Summary
 
