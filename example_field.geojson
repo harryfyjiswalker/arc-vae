@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Example maize field, Bavaria, Germany",
+        "notes": "~200m x 200m field near MNI experimental site. Use with --start 2022-04-01 --end 2022-10-01"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [11.717650923618752, 48.249901688825005],
+            [11.720349076381247, 48.249901688825005],
+            [11.720349076381247, 48.251698311174990],
+            [11.717650923618752, 48.251698311174990],
+            [11.717650923618752, 48.249901688825005]
+          ]
+        ]
+      }
+    }
+  ]
+}
