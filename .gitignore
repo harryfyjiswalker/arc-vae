@@ -1,0 +1,12 @@
+LMU_data/
+outputs/*
+!outputs/maize_d128_L4_e20+30_sup10.0_20260518_1637
+ARC/
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+emissions*.csv
+*.npz
+**/.DS_Store
+.DS_Store
