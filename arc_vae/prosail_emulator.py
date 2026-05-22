@@ -29,10 +29,8 @@ import torch.nn as nn
 # ---------------------------------------------------------------------------
 # Path helpers
 # ---------------------------------------------------------------------------
-_ARC_DATA = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..", "ARC", "arc", "data"
-)
+import arc as _arc
+_ARC_DATA    = os.path.join(os.path.dirname(os.path.abspath(_arc.__file__)), "data")
 _WEIGHTS_PATH = os.path.join(_ARC_DATA, "foward_prosail_model_weights.npz")
 
 
