@@ -1,0 +1,7 @@
+torch>=2.0.0
+numpy>=1.24
+scipy>=1.10
+jax>=0.4.0
+jaxlib>=0.4.0
+pynndescent>=0.5.11
+tqdm>=4.65
