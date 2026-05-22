@@ -1,7 +1,7 @@
 """
 Synthetic Data Loader for ARC-VAE Training
-==========================================
-Generates synthetic S2 time series for German maize using generate_arc_refs,
+__
+This code generates synthetic S2 time series for German maize using generate_arc_refs,
 with realistic observation patterns, cloud masking, and heteroscedastic noise.
 
 Each sample returned is a complete growing season for one synthetic pixel:
@@ -15,14 +15,16 @@ Each sample returned is a complete growing season for one synthetic pixel:
   - soil_true : (4,)           true soil parameters
 
 Design decisions documented here:
-  - German maize phenology: start DOY 130-155, season 120-155 days
+  - Chosenn start DOY 130-155, season 120-155 days
   - 20-40 randomly spaced observations in DOY window [100, 300]
   - Cloud masking: 10-30% of observations randomly removed, clustered
     around a random date to simulate multi-day cloud events
   - Noise: sigma_b = sigma_base_b + sigma_rel * reflectance_b
     with sigma_base = 0.005 (floor) and sigma_rel = 0.02 (2% of signal)
-    These are conservative SIAC-level uncertainties
   - Padding to MAX_OBS=50 with obs_mask to handle variable lengths
+
+We find that the model performs poorly when very few observations are available. Higher % cloud masking
+may be useful in subsequent training.
 """
 
 import sys
@@ -35,15 +37,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "ARC"))
 from arc.arc_sample_generator import generate_arc_refs
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
+# Baseline observation boundaries, target bands, and parameter shapes
 MAX_OBS    = 50     # maximum sequence length (pad shorter sequences)
 N_BANDS    = 10     # S2 bands: B02 B03 B04 B05 B06 B07 B08 B8A B11 B12
 N_P_PARAMS = 7      # scaling parameters
 N_H_PARAMS = 4      # phenology parameters
 
-# German maize phenology bounds
+# Rough phenology bounds
 GERMANY_SEASON_START_MIN = 125   # earliest planting DOY
 GERMANY_SEASON_START_MAX = 155   # latest planting DOY
 GERMANY_SEASON_LEN_MIN   = 120   # shortest season (days)
@@ -65,10 +65,7 @@ SZA_MIN, SZA_MAX = 25.0, 60.0    # solar zenith angle degrees
 VZA_MIN, VZA_MAX =  0.0, 10.0    # view zenith angle degrees
 
 
-# ---------------------------------------------------------------------------
 # Importance sampling for p_LAI
-# ---------------------------------------------------------------------------
-
 # p_LAI bounds (from encoder.py)
 _P_LAI_LO = 0.1624
 _P_LAI_HI = 2.5978
@@ -93,14 +90,12 @@ def _importance_weights_lai(p_lai: np.ndarray, rng) -> np.ndarray:
     return weights
 
 
-# ---------------------------------------------------------------------------
 # Core sample generation
-# ---------------------------------------------------------------------------
 def _generate_observation_doys(rng, season_start, season_length):
     """
     Sample realistic S2 acquisition dates within the growing season window.
     
-    S2 revisit is ~5 days. We sample n_total dates uniformly within
+    S2 revisit is approx. 5 days. We sample n_total dates uniformly within
     [DOY_WINDOW_START, DOY_WINDOW_END], then sort them.
     """
     n_total = rng.integers(MIN_OBS_TOTAL, MAX_OBS_TOTAL + 1)
@@ -116,10 +111,9 @@ def _apply_cloud_masking(rng, doys, cloud_fraction_range=(0.10, 0.30)):
     """
     Simulate cloud contamination with spatial clustering.
     
-    Rather than masking uniformly at random (which is too optimistic),
+    Rather than masking uniformly at random (possibly too optimistic),
     we simulate 1-3 cloud events, each lasting 5-15 consecutive days,
     and mask any acquisition that falls within a cloud event window.
-    This better represents real S2 cloud patterns.
     
     Returns a boolean array: True = cloud-free (keep), False = cloudy (mask).
     """
@@ -173,15 +167,14 @@ def _add_noise(rng, reflectance):
     return noisy, sigma
 
 
-# ---------------------------------------------------------------------------
+
 # Dataset
-# ---------------------------------------------------------------------------
 class GermanyMaizeDataset(Dataset):
     """
-    Synthetic dataset of German maize S2 time series.
+    Synthetic dataset of maize S2 time series.
     
     Generates samples on-the-fly using generate_arc_refs with parameters
-    appropriate for German maize phenology.
+    appropriate for maize phenology.
     
     Parameters
     ----------
@@ -207,8 +200,8 @@ class GermanyMaizeDataset(Dataset):
         self.crop_type      = crop_type
 
         # Pre-generate all samples at construction time
-        # (avoids multiprocessing issues with JAX inside DataLoader workers)
-        print(f"Generating {n_samples:,} synthetic samples...")
+        # (to avoid multiprocessing issues with JAX inside DataLoader workers)
+        print(f"Generating {n_samples:,} synthetic samples")
         self._data = self._generate_all(n_samples, batch_size_arc, seed)
         print("Done.")
 
@@ -234,9 +227,7 @@ class GermanyMaizeDataset(Dataset):
         while n_generated < n_samples:
             n_this = min(batch_size_arc, n_samples - n_generated)
 
-            # --- Sample a shared observation pattern for this batch ---
-            # (All samples in a batch share DOYs and angles, mimicking
-            #  one S2 tile observed at the same dates — realistic)
+            # Sample a shared observation pattern for this batch
             season_start = int(rng.integers(GERMANY_SEASON_START_MIN,
                                              GERMANY_SEASON_START_MAX + 1))
             season_len   = int(rng.integers(GERMANY_SEASON_LEN_MIN,
@@ -245,8 +236,8 @@ class GermanyMaizeDataset(Dataset):
             sza, vza, raa = _sample_angles(rng, len(doys_all))
             angs = (sza, vza, raa)
 
-            # --- Generate reflectances via ARC ---
-            # Generate 3x samples then importance-resample on p_LAI
+            # Generate reflectances via ARC
+            # Try generating 3x samples then importance-resample on p_LAI
             # to concentrate training data at realistic LAI values
             n_oversample = min(n_this * 3, 1024)
             try:
@@ -280,7 +271,7 @@ class GermanyMaizeDataset(Dataset):
             # Angles array: (T, 3) shared across all samples in batch
             angles_arr = np.stack([sza, vza, raa], axis=-1)   # (T, 3)
 
-            # --- Per-sample cloud masking and noise ---
+            # Per-sample cloud masking and noise 
             for i in range(n_actual):
                 # Cloud mask: shared pattern per tile but sample-independent here
                 # In practice one tile shares clouds, but for synthetic training
@@ -294,7 +285,7 @@ class GermanyMaizeDataset(Dataset):
                 # Add SIAC-style noise
                 refl_noisy, sigma_arr = _add_noise(rng, refl_clean)
 
-                # --- Pad to MAX_OBS ---
+                # Pad to MAX_OBS 
                 pad = MAX_OBS - T_obs
                 refl_pad  = np.zeros((MAX_OBS, N_BANDS),  dtype=np.float32)
                 ang_pad   = np.zeros((MAX_OBS, 3),        dtype=np.float32)
@@ -339,18 +330,18 @@ class GermanyMaizeDataset(Dataset):
         return {k: torch.from_numpy(v[idx]) for k, v in self._data.items()}
 
 
-# ---------------------------------------------------------------------------
+
 # Factory functions
-# ---------------------------------------------------------------------------
+
 def make_dataloaders(
     n_train:     int = 50_000,
     n_val:       int =  5_000,
     batch_size:  int =    128,
-    num_workers: int =      0,   # 0 = main process (safe with JAX)
+    num_workers: int =      0,   # 0 = main process 
     seed:        int =     42,
 ) -> tuple[DataLoader, DataLoader]:
     """
-    Create train and validation DataLoaders of synthetic German maize data.
+    Create train and validation DataLoaders of synthetic maize data.
     
     Parameters
     ----------
@@ -387,18 +378,16 @@ def make_dataloaders(
     return train_loader, val_loader
 
 
-# ---------------------------------------------------------------------------
+
 # Verification
-# ---------------------------------------------------------------------------
+
 def verify_dataloader():
     """
-    Smoke test: generate a small dataset and check shapes, ranges,
+    Checking functionality before full trianing. Generate a small dataset and check shapes, ranges,
     observation statistics, and that the ground-truth (p,h) round-trip
-    through the decoder produces sensible reflectances.
+    through the decoder produces sensible reflectances. 
     """
-    print("=" * 60)
-    print("Step 3: Verify synthetic data loader")
-    print("=" * 60)
+    print("Verify synthetic data loader")
 
     # Small dataset for quick verification
     ds = GermanyMaizeDataset(n_samples=512, batch_size_arc=128, seed=0)
@@ -451,7 +440,7 @@ def verify_dataloader():
         print(f"  {name:8s}: [{pmin:.3f}, {pmax:.3f}]  "
               f"contains p=1.0: {'✓' if contains_1 else '✗'}")
 
-    # Noise sanity check
+    # Noise check
     sigma = batch["sigma"]
     sigma_valid = sigma[mask.expand_as(sigma).bool()]
     print(f"\nObservation uncertainty (sigma):")
@@ -459,8 +448,7 @@ def verify_dataloader():
     print(f"  Max: {sigma_valid.max().item():.5f}")
     print(f"  Mean: {sigma_valid.mean().item():.5f}")
 
-    print("\nData loader verification: PASSED ✓")
-    print("Proceed to Step 4 (Transformer encoder).")
+    print("\nData loader verification passed.")
     return True
 
 
