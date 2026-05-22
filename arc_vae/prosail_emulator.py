@@ -95,7 +95,6 @@ class PROSAILEmulator(nn.Module):
         return self.net(x)
 
 
-# ---------------------------------------------------------------------------
 # Input pre-processing  (mirrors prepare_final_input in arc_sample_generator)
 # ---------------------------------------------------------------------------
 def prepare_input(
@@ -148,7 +147,6 @@ def verify_against_jax(n_samples: int = 128, rtol: float = 1e-4):
     Generate random inputs, run both JAX and PyTorch versions,
     and check they agree to within rtol.
 
-    This is the FIRST test that must pass before any training code is written.
     """
     import sys
     from arc.NN_predict_jax import predict as jax_predict
