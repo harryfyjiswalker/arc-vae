@@ -1,0 +1,22 @@
+{
+  "n_train": 200000,
+  "n_val": 5000,
+  "batch_size": 128,
+  "crop_type": "maize",
+  "d_model": 128,
+  "n_layers": 4,
+  "n_heads": 4,
+  "n_queries": 4,
+  "d_ff": 256,
+  "dropout": 0.1,
+  "n_epochs_s1": 20,
+  "n_epochs_s2": 30,
+  "beta_target": 0.3,
+  "lambda_sup": 10.0,
+  "lr": 0.0001,
+  "seed": 42,
+  "out_dir": "/content/drive/MyDrive/01_ARC-VAE/outputs",
+  "log_every": 100,
+  "device": "auto",
+  "resume": false
+}

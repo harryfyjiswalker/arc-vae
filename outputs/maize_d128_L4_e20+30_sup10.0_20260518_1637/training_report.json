@@ -1,0 +1,33 @@
+{
+  "run_name": "maize_d128_L4_e20+30_sup10.0_20260518_1637",
+  "config": {
+    "n_train": 200000,
+    "n_val": 10000,
+    "batch_size": 128,
+    "n_epochs_s1": 20,
+    "n_epochs_s2": 30,
+    "beta_target": 0.3,
+    "lambda_sup": 10.0,
+    "lr": 0.0001,
+    "d_model": 128,
+    "n_layers": 4,
+    "n_heads": 4,
+    "n_queries": 4,
+    "d_ff": 256,
+    "dropout": 0.1,
+    "seed": 42,
+    "log_every": 100,
+    "crop_type": "maize"
+  },
+  "device": "cuda",
+  "gpu_name": "Tesla T4",
+  "t_data_s": 1114.9,
+  "t_train_s": 14604.8,
+  "t_per_epoch_s": 292.1,
+  "energy_wh": 202.84,
+  "carbon_global_g": 96.351,
+  "carbon_codecarbon_g": 95.045,
+  "final_val_rec": 10.8836,
+  "final_val_kl": 17.1072,
+  "final_train_sup": 0.041017
+}
