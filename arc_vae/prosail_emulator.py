@@ -143,7 +143,6 @@ def verify_against_jax(n_samples: int = 128, rtol: float = 1e-4):
     This is the FIRST test that must pass before any training code is written.
     """
     import sys
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "ARC"))
     from arc.NN_predict_jax import predict as jax_predict
     from arc.arc_sample_generator import load_model
 
