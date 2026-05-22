@@ -1,10 +1,10 @@
 """
 ARC Archetype Decoder — Differentiable PyTorch Implementation
-=============================================================
+__
 
-Implements the mapping  (p, h, DOYs, angles, soil) -> S2 reflectance
-faithfully following the ARC forward model, but entirely in PyTorch
-so that gradients flow back through the decoder to update the encoder.
+Implements the mapping  (p, h, DOYs, angles, soil) --> S2 reflectance
+following the ARC forward model, but entirely in PyTorch so that gradients 
+flow back through the decoder to update the encoder.
 
 The ARC forward model in calendar time works as follows:
   1. From phenology parameters h = (growth_speed, start, senes_speed, end),
@@ -44,9 +44,7 @@ from pathlib import Path
 
 from prosail_emulator import PROSAILEmulator, prepare_input
 
-# ---------------------------------------------------------------------------
 # Paths
-# ---------------------------------------------------------------------------
 _ARC_DATA = Path(__file__).parent.parent / "ARC" / "arc" / "data"
 
 # Physiological limits (order: N, Cab, Cm, Cw, LAI, ALA, Cbrown)
@@ -55,10 +53,10 @@ _LO = torch.tensor([1.0,  0.0,   0.0,   0.0,  0.0,  20.0, 0.0],  dtype=torch.flo
 _HI = torch.tensor([3.0, 140.0,  0.04,  0.1,  10.0, 90.0, 1.5],  dtype=torch.float32)
 
 
-# ---------------------------------------------------------------------------
+
 # Differentiable double-logistic
-# ---------------------------------------------------------------------------
-def double_logistic(h: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
+# Evaluate cyclical seasonal green-up and senescence curves using continuous sigmoids
+def double_logistic(h: torch.Tensor, t: torch.Tensor) -> torch.Tensor: 
     """
     Compute the ARC double-logistic curve in a differentiable way.
 
@@ -99,15 +97,13 @@ def normalise_logistic(L: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
     return (L - Lmin) / (Lmax - Lmin + eps)   # (B, T)
 
 
-# ---------------------------------------------------------------------------
+
 # Archetype decoder module
-# ---------------------------------------------------------------------------
 class ARCDecoder(nn.Module):
     """
     Differentiable ARC archetype forward model + PROSAIL emulator.
 
-    The decoder is FIXED — no parameters are trained.  Gradients flow
-    through it to update the encoder.
+    The decoder is fixed.  Gradients flow through it to update the encoder.
 
     Parameters
     ----------
@@ -154,9 +150,7 @@ class ARCDecoder(nn.Module):
         # matching exactly what ARC's compute_reference_parameters does.
         self._build_ref_inverse(meds, n_ref_points)
 
-    # ------------------------------------------------------------------
     # Reference logistic inverse (fixed, pre-computed)
-    # ------------------------------------------------------------------
     def _build_ref_inverse(self, meds: np.ndarray, n_ref_points: int):
         """
         Build a fixed lookup:  normalised logistic value v → archetype DOY τ.
@@ -181,7 +175,7 @@ class ARCDecoder(nn.Module):
         y_ref_mono = y_ref.copy()
         y_ref_mono[argmax:] = y_ref_mono[argmax:] * -1 + 2   # range [1, 2] on descent
 
-        # Build a fine grid of v values → corresponding archetype DOY
+        # Build a fine grid of v values --> corresponding archetype DOY
         v_grid = np.linspace(y_ref_mono.min(), y_ref_mono.max(), n_ref_points)
         doy_grid = np.interp(v_grid, y_ref_mono, days)  # monotone → invertible
 
@@ -189,9 +183,9 @@ class ARCDecoder(nn.Module):
         self.register_buffer("doy_grid", torch.from_numpy(doy_grid.astype(np.float32)))
         self._ref_argmax = argmax   # needed to mirror sample logistic the same way
 
-    # ------------------------------------------------------------------
-    # Core forward: (p, h, doys, angles, soil) → reflectance
-    # ------------------------------------------------------------------
+  
+    # Core forward: (p, h, doys, angles, soil) --> reflectance
+    
     def forward(
         self,
         p:      torch.Tensor,   # (B, 7)
@@ -206,11 +200,8 @@ class ARCDecoder(nn.Module):
         B  = p.shape[0]
         T  = doys.shape[0]
 
-        # ----------------------------------------------------------
         # 1. Compute normalised sample logistic over ALL 365 days
-        #    (critical: normalisation must use the full-year range,
-        #     not just the T observation DOYs — matches ARC exactly)
-        # ----------------------------------------------------------
+ 
         t_all = torch.arange(365, dtype=torch.float32, device=p.device)  # (365,)
         L_all = double_logistic(h, t_all)       # (B, 365)
 
@@ -219,62 +210,49 @@ class ARCDecoder(nn.Module):
         Lmax = L_all.amax(dim=1, keepdim=True)
         L_norm_all = (L_all - Lmin) / (Lmax - Lmin + 1e-8)   # (B, 365)
 
-        # Mirror descending part to make curve monotone [0→1, 1→2].
+        # Mirror descending part to make curve monotone [0-->1, 1-->2].
         #
         # ARC uses hard argmax to find the peak, which is non-differentiable.
         # We replace it with a differentiable soft-peak estimate:
         #   t_peak ≈ (k2*t1 + k1*t2) / (k1+k2)  (weighted midpoint of the logistic)
         # and a smooth sigmoid mask instead of a binary step.
         #
-        # This approximation is accurate to ~1 DOY for typical parameters
-        # and enables ∂L/∂h to be non-zero so the encoder learns phenology.
+        # This approximation enables ∂L/∂h to be non-zero so the encoder learns phenology.
         k1 = h[:, 0:1]     # (B,1)
         t1 = h[:, 1:2]
         k2 = h[:, 2:3]
         t2 = h[:, 3:4]
         t_peak = (k2 * t1 + k1 * t2) / (k1 + k2 + 1e-8)   # (B, 1)  differentiable
 
-        # Soft mask: ≈0 before peak, ≈1 after peak.  alpha=20 gives ~10-DOY transition.
+        # Soft mask: ≈0 before peak, ≈1 after peak.  alpha=20 gives approx 10-DOY transition.
         t_grid = t_all.unsqueeze(0)                            # (1, 365)
         soft_mask = torch.sigmoid(20.0 * (t_grid - t_peak))   # (B, 365) ∈ (0,1)
 
         # L_mono: ascending part stays [0,1], descending part mapped to [1,2]
         L_mono_all = (1.0 - soft_mask) * L_norm_all + soft_mask * (2.0 - L_norm_all)
 
-        # ----------------------------------------------------------
         # 2. Extract logistic values at observation DOYs
-        #    ARC uses doys as 1-indexed → array index = doy - 1
-        # ----------------------------------------------------------
+        #    ARC uses doys as 1-indexed --> array index = doy - 1
         doy_idx = (doys.long() - 1).clamp(0, 364)        # (T,) 0-indexed
         L_mono_obs = L_mono_all[:, doy_idx]               # (B, T)
 
-        # ----------------------------------------------------------
         # 3. Map to archetype calendar DOY via inverse reference logistic
-        # ----------------------------------------------------------
         tau = self._interp1d(L_mono_obs.reshape(-1),
                               self.v_grid, self.doy_grid)  # (B*T,)
         tau = tau.reshape(B, T)                             # (B, T)  archetype DOY ∈ [0, 364]
 
-        # ----------------------------------------------------------
         # 3. Look up archetype median at tau  (differentiable interp)
-        # ----------------------------------------------------------
         # meds is (365, 7); tau is (B, T); output (B, T, 7)
         a = self._lookup_meds(tau)   # (B, T, 7)
 
-        # ----------------------------------------------------------
         # 4. Scale: x_j(t) = p_j * a_j(tau)  then clip to physical bounds
-        # ----------------------------------------------------------
         x = p.unsqueeze(1) * a                             # (B, T, 7)
         x = torch.clamp(x, self.lo, self.hi)               # (B, T, 7)
 
-        # ----------------------------------------------------------
         # 5. Normalise soil params (same as ARC adjust_soil_params)
-        # ----------------------------------------------------------
         soil_norm = self._normalise_soil(soil, angles, doys.float(), B, T)  # (B, T, 4)
 
-        # ----------------------------------------------------------
         # 6. Apply PROSAIL input pre-processing and run emulator
-        # ----------------------------------------------------------
         N       = x[..., 0]   # (B, T)
         cab     = x[..., 1]
         cm      = x[..., 2]
@@ -315,9 +293,7 @@ class ARCDecoder(nn.Module):
         r = r.reshape(B, T, 10)         # (B, T, 10)
         return r
 
-    # ------------------------------------------------------------------
     # Helper: 1D linear interpolation (differentiable)
-    # ------------------------------------------------------------------
     @staticmethod
     def _interp1d(
         x: torch.Tensor,        # (N,) query points
@@ -342,9 +318,7 @@ class ARCDecoder(nn.Module):
         w = (x_ - x_lo) / (x_hi - x_lo + 1e-12)
         return f_lo + w * (f_hi - f_lo)
 
-    # ------------------------------------------------------------------
-    # Helper: look up meds at continuous DOY tau  (B, T) -> (B, T, 7)
-    # ------------------------------------------------------------------
+    # Helper: look up meds at continuous DOY tau  (B, T) --> (B, T, 7)
     def _lookup_meds(self, tau: torch.Tensor) -> torch.Tensor:
         """Differentiable linear interpolation into the 365-day meds table."""
         B, T = tau.shape
@@ -359,9 +333,7 @@ class ARCDecoder(nn.Module):
         a    = a_lo + w * (a_hi - a_lo)   # (B*T, 7)
         return a.reshape(B, T, 7)
 
-    # ------------------------------------------------------------------
-    # Helper: normalise soil parameters (mirrors ARC adjust_soil_params)
-    # ------------------------------------------------------------------
+    # Helper: normalise soil parameters (as in ARC adjust_soil_params)
     def _normalise_soil(
         self,
         soil: torch.Tensor,     # (B, 4)  raw [brightness, shape_p1, shape_p2, moisture]
@@ -401,9 +373,7 @@ class ARCDecoder(nn.Module):
         return torch.stack([p0, p1, p2, p3], dim=-1)   # (B, T, 4)
 
 
-# ---------------------------------------------------------------------------
 # Verification
-# ---------------------------------------------------------------------------
 def verify_decoder(n_samples: int = 16, rtol: float = 0.05):
     """
     Generate synthetic samples via ARC's generate_arc_refs, then run the
@@ -438,18 +408,12 @@ def verify_decoder(n_samples: int = 16, rtol: float = 0.05):
     maize = np.load(_ARC_DATA / "US_001.npz")
     maxs  = np.nanmax(maize["meds"], axis=0)   # (7,)
 
-    # p is bio_s * maxs  (back to physical scaling, so that p=1 → peak archetype)
-    # WAIT: bio_s is already in units of [value / archetype_max]
-    # So bio_paras = bio_s[:, j] * meds[:, j]  meaning bio_s IS p (the scale factor)
-    # p_j = bio_s[:, j]  (unitless scale relative to archetype median trajectory)
-    # x_j(t) = p_j * meds[tau, j]
-    # So we pass p = bio_s  BUT our decoder multiplies p * a where a = meds[tau]
-    # That gives x = bio_s * meds[tau]  ✓
+    # p is bio_s * maxs  (back to physical scaling, so that p=1 --> peak archetype)
     p_t = torch.from_numpy(bio_s.astype(np.float32))      # (N, 7)
 
     # h: pheo_s columns are [growth_speed, start, senescence_speed, end_relative]
     # ARC: pheo_samples[:, 3] += pheo_samples[:, 1]  BEFORE the logistic call
-    # Our double_logistic adds h[:,3] to h[:,1] internally — so pass raw pheo_s
+    # Here double_logistic adds h[:,3] to h[:,1] internally — so pass raw pheo_s
     h_t = torch.from_numpy(pheo_s.astype(np.float32))     # (N, 4)
 
     doys_t = torch.from_numpy(doys_np.astype(np.float32)) # (T,)
@@ -461,13 +425,13 @@ def verify_decoder(n_samples: int = 16, rtol: float = 0.05):
 
     soil_t = torch.from_numpy(soil_s.astype(np.float32))  # (N, 4)
 
-    # Run our decoder
+    # Run decoder
     decoder = ARCDecoder(crop_type="maize")
     decoder.eval()
     with torch.no_grad():
         r_hat = decoder(p_t, h_t, doys_t, angles_t, soil_t)  # (N, T, 10)
 
-    # ARC reference:  arc_refs (10, T, N) → (N, T, 10)
+    # ARC reference:  arc_refs (10, T, N) --> (N, T, 10)
     r_arc = torch.from_numpy(arc_refs.transpose(2, 1, 0).astype(np.float32))
 
     abs_err = (r_hat - r_arc).abs()
@@ -481,7 +445,7 @@ def verify_decoder(n_samples: int = 16, rtol: float = 0.05):
     print(f"  Reflectance range (ARC): [{r_arc.min():.4f}, {r_arc.max():.4f}]")
 
     passed = rel_err.mean().item() < rtol
-    status = "PASSED ✓" if passed else "FAILED ✗  (mean rel error exceeds tolerance)"
+    status = "Passed." if passed else "Fail: mean rel error exceeds tolerance."
     print(f"  Result: {status}")
     return passed
 
@@ -493,7 +457,6 @@ def verify_gradients():
     B, T = 4, 8
     p = torch.ones(B, 7,    requires_grad=True)
     # h[:,3] must be the ABSOLUTE end DOY (> start).
-    # Example: start=140, end_abs=240 → 100-day season.
     h = torch.tensor([[0.15, 140.0, 0.10, 240.0]] * B, requires_grad=True)
     doys   = torch.arange(150, 150 + T * 8, 8, dtype=torch.float32)
     angles = torch.zeros(B, T, 3)
@@ -508,8 +471,8 @@ def verify_gradients():
     h_grad_ok = h.grad is not None and h.grad.abs().sum() > 0
 
     print(f"\nGradient flow check:")
-    print(f"  ∂L/∂p non-zero: {'✓' if p_grad_ok else '✗'}")
-    print(f"  ∂L/∂h non-zero: {'✓' if h_grad_ok else '✗'}")
+    print(f"  ∂L/∂p non-zero: {'Pass' if p_grad_ok else 'Fail'}")
+    print(f"  ∂L/∂h non-zero: {'Pass' if h_grad_ok else 'Fail'}")
     print(f"  ∂L/∂p sample:   {p.grad[0].tolist()}")
     print(f"  ∂L/∂h sample:   {h.grad[0].tolist()}")
 
@@ -517,12 +480,10 @@ def verify_gradients():
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("Step 2: Verify differentiable ARC archetype decoder")
-    print("=" * 60)
+    print("Verifying differentiable ARC archetype decoder")
     v1 = verify_decoder()
     v2 = verify_gradients()
     if v1 and v2:
-        print("\nAll checks passed. Proceed to Step 3 (data loader).")
+        print("\nPassed..")
     else:
-        print("\nSome checks failed — review before proceeding.")
+        print("\nSome checks failed..")
