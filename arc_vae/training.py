@@ -1,21 +1,27 @@
 """
 ARC-VAE Training Loop
-=====================
-Wires together:
-  - Transformer encoder  → posterior q(p,h | X) = TN(μ, σ; z_lo, z_hi)
-  - Reparameterisation   → differentiable sample z ~ q via quantile function
-  - ARC archetype decoder → predicted S2 reflectance r̂(z)
-  - ELBO loss            → reconstruction + KL(q || Uniform)
+__
+This module brings model components together into variational loop:
+  - Transformer encoder  --> posterior q(p,h | X) = TN(μ, σ; z_lo, z_hi)
+  - Reparameterisation   --> differentiable sample z ~ q via quantile function
+  - ARC archetype decoder --> predicted S2 reflectance r̂(z)
+  - ELBO loss            --> reconstruction + KL(q || Uniform)
 
 Prior choice: Uniform over physiological/phenological bounds.
-This exactly matches ARC's a priori, so the KL term becomes:
+This matches ARC's a priori, so the KL term becomes:
 
   KL[TN(μ,σ;a,b) || Uniform(a,b)] = log(b-a) - H[TN(μ,σ;a,b)]
 
 where H is the differential entropy of the truncated normal.
 This penalises the encoder for being over-confident (low entropy)
-without pulling the posterior toward any particular mean — the
-reconstruction loss alone determines where the posterior sits.
+without pulling the posterior toward any particular mean.
+
+Loss Component Implementations:
+    - Reconstruction Error (L_rec): Minimises uncertainty-weighted spectral error.
+    - Latent Regularizer (L_kl): Evaluates Kullback-Leibler distance targets.
+      Biophysical codes (p) track uninformative flat constraints (sigma=999).
+      Phenology timings (h) check Gaussian targets tailored to regional calendars.
+    - Supervised Regression (L_sup): Anchors unobservable states against true generating latents.
 
 Two-stage training (following formulation):
   Stage 1 (epochs 1..E1):   β_KL = 0  — reconstruct freely
@@ -37,21 +43,17 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "ARC"))
 from encoder import ARCVAEEncoder, Z_LO, Z_HI
 from archetype_decoder import ARCDecoder
 
-# ---------------------------------------------------------------------------
-# Truncated normal utilities  (all differentiable w.r.t. μ and σ)
-# ---------------------------------------------------------------------------
-
 # Small numerical constants
 _LOG2PI = math.log(2 * math.pi)
 _EPS    = 1e-8
 
 
-def _standard_normal_log_pdf(x):
+def _standard_normal_log_pdf(x): # Evaluate numerical standard normal log probability densities
     """log φ(x) for standard normal."""
     return -0.5 * (_LOG2PI + x ** 2)
 
 
-def _standard_normal_log_cdf(x):
+def _standard_normal_log_cdf(x): # Compute analytical log cumulative distribution values using special functions
     """
     log Φ(x) — numerically stable via torch.special.log_ndtr.
     Falls back to erfc-based computation for older PyTorch.
@@ -62,7 +64,7 @@ def _standard_normal_log_cdf(x):
         return torch.log(0.5 * (1.0 + torch.erf(x / math.sqrt(2))) + _EPS)
 
 
-def _log_normalisation(mu, sigma, z_lo, z_hi):
+def _log_normalisation(mu, sigma, z_lo, z_hi): # Calculate scale normalisation metrics isolating the truncated density interval
     """
     log Z = log[Φ((z_hi-μ)/σ) - Φ((z_lo-μ)/σ)]
     """
@@ -74,7 +76,7 @@ def _log_normalisation(mu, sigma, z_lo, z_hi):
     return torch.log(Z)
 
 
-def truncated_normal_entropy(mu, sigma, z_lo, z_hi):
+def truncated_normal_entropy(mu, sigma, z_lo, z_hi): # Compute analytical entropy to penalise over-confident posterior boundaries
     """
     Differential entropy of TN(μ, σ; z_lo, z_hi):
 
@@ -112,17 +114,14 @@ def kl_tn_uniform(mu, sigma, z_lo, z_hi):
     return log_range - H   # ≥ 0
 
 
-# ---------------------------------------------------------------------------
-# Informative prior parameters
-# ---------------------------------------------------------------------------
+## FLEXIBLE TO UPDATES 
+# Configure base structural priors anchored around regional crop milestones
 # p parameters: prior mean = 1.0 by archetype normalisation construction.
-# h parameters: prior mean = midpoint of ARC bounds for German maize.
+# h parameters: prior mean = midpoint of ARC bounds for maize archetype
 # σ values: informed defaults from agricultural knowledge.
-#   These will be overridden with Feng Yin's empirical pixel distributions
-#   once available. To update, call model.set_prior(mu, sigma) before training.
-#
 #   p order: N, Cab, Cm, Cw, LAI, ALA, Cbrown
 #   h order: h_growth, h_start, h_senes, h_end
+
 MU_PRIOR = torch.tensor([
     1.0,    # p_N       — archetype median by construction
     1.0,    # p_Cab     — archetype median by construction
@@ -138,10 +137,7 @@ MU_PRIOR = torch.tensor([
 ], dtype=torch.float32)
 
 SIGMA_PRIOR = torch.tensor([
-    # p parameters (j=0..6): σ=999 → effectively uniform prior.
-    # Empirical σ from Feng Yin's archetype training pixels would allow
-    # proper informative priors here. Until then, large σ makes the
-    # TruncatedNormal prior flat over physiological bounds — functionally
+    # TruncatedNormal prior flat over physiological bounds — 
     # equivalent to uniform without code restructuring. μ=1.0 is retained.
     999.0,  # p_N
     999.0,  # p_Cab
@@ -150,17 +146,16 @@ SIGMA_PRIOR = torch.tensor([
     999.0,  # p_LAI
     999.0,  # p_ALA
     999.0,  # p_Cbrown
-    # h parameters (j=7..10): informative, grounded in agricultural knowledge.
+    # h parameters (j=7..10): informative from archetype
     # Evidence from diagnostic: unobservable h_end achieves near-optimal
-    # RMSE (12.2 vs optimal 12.5); h_start R² improved 0.39 → 0.56.
     0.046,  # h_growth  — (b-a)/6
-    10.0,   # h_start   — ~2-week German maize planting window
+    10.0,   # h_start   — 2-week maize planting window
     0.060,  # h_senes   — (b-a)/6
-    12.0,   # h_end     — ~3-week German maize harvest window
+    12.0,   # h_end     — 3-week maize harvest window
 ], dtype=torch.float32)
 
 
-def log_pdf_tn(z, mu, sigma, lo, hi):
+def log_pdf_tn(z, mu, sigma, lo, hi): # Evaluate explicit log probability locations for sampled variables
     """
     Log PDF of TruncatedNormal(mu, sigma; lo, hi) evaluated at z.
     All tensors broadcastable to (B, 11).
@@ -179,7 +174,7 @@ def log_pdf_tn(z, mu, sigma, lo, hi):
     return log_norm_pdf - log_Z
 
 
-def kl_tn_tn(mu_q, sigma_q, mu_p, sigma_p, z_lo, z_hi, z_samples):
+def kl_tn_tn(mu_q, sigma_q, mu_p, sigma_p, z_lo, z_hi, z_samples): # Compute Kullback-Leibler divergence between inferred and prior truncated normal models
     """
     Monte Carlo KL[TN(mu_q, sigma_q; bounds) || TN(mu_p, sigma_p; bounds)].
 
@@ -195,7 +190,7 @@ def kl_tn_tn(mu_q, sigma_q, mu_p, sigma_p, z_lo, z_hi, z_samples):
     return log_q - log_p   # ≥ 0 in expectation
 
 
-def reparameterise(mu, sigma, z_lo, z_hi):
+def reparameterise(mu, sigma, z_lo, z_hi): # Sample configurations differentiably via inverse-CDF quantile transformations
     """
     Draw z ~ TN(μ, σ; z_lo, z_hi) via the inverse CDF trick.
 
@@ -223,10 +218,8 @@ def reparameterise(mu, sigma, z_lo, z_hi):
     return torch.clamp(z, z_lo + _EPS, z_hi - _EPS)
 
 
-# ---------------------------------------------------------------------------
-# Supervised auxiliary loss
-# ---------------------------------------------------------------------------
 
+# Supervised auxiliary loss
 def supervised_loss(
     mu:       torch.Tensor,     # (B, 11)  posterior means
     z_true:   torch.Tensor,     # (B, 11)  true (p, h) used to generate sample
@@ -256,9 +249,7 @@ def supervised_loss(
     return (norm_err ** 2).mean()                   # scalar — mean over batch and params
 
 
-# ---------------------------------------------------------------------------
 # ELBO loss
-# ---------------------------------------------------------------------------
 
 def elbo_loss(
     s2_refl:   torch.Tensor,          # (B, T, 10)
@@ -285,7 +276,7 @@ def elbo_loss(
 
     Falls back to KL vs Uniform if mu_prior/sigma_prior not provided.
     """
-    # ---- Reconstruction loss ----
+    # Reconstruction loss
     mask     = obs_mask.unsqueeze(-1).float()
     sq_err   = ((s2_refl - r_hat) ** 2) * mask
     sigma2   = sigma_obs ** 2 + _EPS
@@ -293,7 +284,7 @@ def elbo_loss(
     n_valid  = obs_mask.float().sum(dim=1).clamp(min=1)
     l_rec    = (weighted.sum(dim=(1, 2)) / (n_valid * 10)).mean()
 
-    # ---- KL loss ----
+    # KL loss
     if mu_prior is not None and sigma_prior is not None and z_samples is not None:
         # Informative prior: KL[TN(q) || TN(prior)] via Monte Carlo
         kl_per_param = kl_tn_tn(mu, sigma, mu_prior, sigma_prior,
@@ -303,13 +294,13 @@ def elbo_loss(
         kl_per_param = kl_tn_uniform(mu, sigma, z_lo, z_hi)
     l_kl = kl_per_param.sum(dim=1).mean()
 
-    # ---- Supervised auxiliary loss ----
+    # Supervised auxiliary loss
     if z_true is not None and lambda_sup > 0:
         l_sup = supervised_loss(mu, z_true, z_lo, z_hi)
     else:
         l_sup = torch.tensor(0.0, device=mu.device)
 
-    # ---- Total ----
+    # Total loss calculation
     loss = l_rec + beta_kl * l_kl + lambda_sup * l_sup
 
     return {
@@ -322,16 +313,13 @@ def elbo_loss(
     }
 
 
-# ---------------------------------------------------------------------------
-# Model: encoder + decoder wired together
-# ---------------------------------------------------------------------------
 
 class ARCVAE(nn.Module):
     """
     Full ARC-VAE model.
 
-    At training: encoder → reparameterise → decoder → ELBO loss
-    At inference: encoder only → posterior (μ, σ) → point estimate μ
+    At training: encoder --> reparameterise --> decoder --> ELBO loss
+    At inference: encoder only --> posterior (μ, σ) --> point estimate μ
     """
 
     def __init__(
@@ -357,12 +345,11 @@ class ARCVAE(nn.Module):
 
         # Informative prior — stored as buffers so they move to GPU
         # with the model and are saved in checkpoints.
-        # Override with Feng Yin's empirical pixel distributions via set_prior().
         self.register_buffer("mu_prior",    MU_PRIOR.clone())
         self.register_buffer("sigma_prior", SIGMA_PRIOR.clone())
 
     def set_prior(self, mu: torch.Tensor, sigma: torch.Tensor):
-        """Override the informative prior with empirical values from Feng Yin."""
+        """Allows manual setting of priors"""
         self.mu_prior.copy_(mu.to(self.mu_prior.device))
         self.sigma_prior.copy_(sigma.to(self.sigma_prior.device))
         names = ["p_N","p_Cab","p_Cm","p_Cw","p_LAI","p_ALA","p_Cbrown",
@@ -386,10 +373,10 @@ class ARCVAE(nn.Module):
         """
         Full forward pass returning loss components and reconstructed r̂.
         """
-        # 1. Encode
+        # Step 1: Infer posterior parameters from satellite observations
         mu, sigma = self.encoder(s2_refl, angles, doys, obs_mask)  # (B,11)
 
-        # 2. Reparameterise
+        # Step 2: Differentiably sample latent metrics across distribution boundaries
         z_lo = self.encoder.z_lo   # (11,)
         z_hi = self.encoder.z_hi   # (11,)
         z    = reparameterise(mu, sigma, z_lo, z_hi)               # (B,11)
@@ -397,7 +384,7 @@ class ARCVAE(nn.Module):
         p = z[:, :7]    # (B, 7)  scaling parameters
         h = z[:, 7:]    # (B, 4)  phenology parameters
 
-        # 3. Decode: handle variable DOY patterns across the batch.
+        # Step 3. Decode: handle variable DOY patterns across the batch.
         #
         # After DataLoader shuffling, samples in a batch may come from
         # different generate_arc_refs calls with different DOY patterns.
@@ -469,10 +456,7 @@ class ARCVAE(nn.Module):
         self.eval()
         return self.encoder(s2_refl, angles, doys, obs_mask)
 
-
-# ---------------------------------------------------------------------------
-# Training loop
-# ---------------------------------------------------------------------------
+#Training
 
 def train(
     model:           ARCVAE,
@@ -519,14 +503,14 @@ def train(
 
     for epoch in range(start_epoch, n_total + 1):
 
-        # Determine β for this epoch
+        # Determine β for this epoch 
         if epoch <= n_epochs_s1:
             beta = 0.0
         else:
             frac = (epoch - n_epochs_s1) / max(n_epochs_s2, 1)
             beta = beta_target * frac
 
-        # ---- Train ----
+        # Train
         model.train()
         ep_rec, ep_kl, ep_sup, n_batches = 0.0, 0.0, 0.0, 0
 
@@ -565,7 +549,7 @@ def train(
             # Gradient clipping
             torch.nn.utils.clip_grad_norm_(
                 [p for p in model.parameters() if p.requires_grad],
-                max_norm=0.5   # tighter than before
+                max_norm=0.5   # increasing tightness
             )
             opt.step()
 
@@ -590,7 +574,7 @@ def train(
             history["train_sup"] = []
         history["train_sup"].append(ep_sup / max(n_batches, 1))
 
-        # ---- Validate ----
+        # Validate
         model.eval()
         val_rec, val_kl, n_val = 0.0, 0.0, 0
         with torch.no_grad():
@@ -656,21 +640,17 @@ def train(
     return history
 
 
-# ---------------------------------------------------------------------------
-# Verification: smoke test the full training loop
-# ---------------------------------------------------------------------------
+
+# Verification checks prior to full training
 
 def verify_training_loop():
     """
-    End-to-end smoke test:
-    - Build a tiny model
-    - Generate a tiny synthetic dataset
+    Test:
+    - Build a small model and generate small synthetic dataset
     - Run 3 epochs (1 stage-1, 2 stage-2)
     - Check loss decreases and all components are finite
     """
-    print("=" * 60)
-    print("Step 5: Verify VAE training loop (smoke test)")
-    print("=" * 60)
+    print("Verify VAE training loop.)")
 
     import sys
     sys.path.insert(0, str(Path(__file__).parent))
@@ -691,7 +671,7 @@ def verify_training_loop():
     print(f"\nEncoder params (trainable): {n_enc:,}")
     print(f"Decoder params (frozen):    {n_dec:,}")
 
-    # Tiny dataset
+    # Small dataset generation
     from torch.utils.data import Subset
     ds = GermanyMaizeDataset(n_samples=256, batch_size_arc=64, seed=1)
     train_loader = DataLoader(Subset(ds, range(200)), batch_size=32, shuffle=True)
