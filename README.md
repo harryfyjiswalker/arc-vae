@@ -272,7 +272,7 @@ The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ su
 #### 4.2 Performance on MNI Field Data
 
 <p align="center">
-  <img src="/images/regional_and_field_panels.png" width="60%" alt="PROSAIL flow">
+  <img src="/images/regional_and_field_panels.png" width="90%" alt="PROSAIL flow">
   <br>
   <em>Table 3. Latent variable reconstruction performance.</em>
 
