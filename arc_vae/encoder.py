@@ -1,7 +1,7 @@
 """
 ARC-VAE Transformer Encoder
-============================
-Maps an observed S2 growing-season time series to a posterior distribution
+__
+encoder.py maps an observed S2 growing-season time series to a posterior distribution
 over the 11 ARC latent parameters z = (p, h).
 
 Architecture:
@@ -14,7 +14,7 @@ Architecture:
      h_end's query learns to attend to late-season observations;
      h_start's query learns to attend to early green-up, etc.
   4. Per-parameter output heads
-     Each parameter j has its own (μ_j, log σ_j) head reading exclusively
+     Each parameter j has its own (μ_j, log σ_j) head reading 
      from its dedicated context vector c_j.
 
 Latent variable structure (11 total):
@@ -27,20 +27,18 @@ import torch
 import torch.nn as nn
 
 
-# ---------------------------------------------------------------------------
-# Parameter bounds  (physical space)
-# ---------------------------------------------------------------------------
-_P_LO = torch.tensor([0.4541, 0.2362, 0.0692, 0.0318, 0.1624, 0.8122, 0.0000],
+_P_LO = torch.tensor([0.4541, 0.2362, 0.0692, 0.0318, 0.1624, 0.8122, 0.0000], # Upper and lower physical boundaries for the 7 canopy scaling metrics
                       dtype=torch.float32)
 _P_HI = torch.tensor([1.3623, 0.9449, 2.7676, 3.1813, 2.5978, 1.2996, 1.8799],
                       dtype=torch.float32)
-_H_LO = torch.tensor([0.045, 115.0, 0.010, 245.0], dtype=torch.float32)
+_H_LO = torch.tensor([0.045, 115.0, 0.010, 245.0], dtype=torch.float32) # Upper and lower absolute day boundaries for the 4 phenological timing metrics
 _H_HI = torch.tensor([0.325, 210.0, 0.370, 365.0], dtype=torch.float32)
 
+# Join boundary blocks to configure unified 11-dimensional latent limits
 Z_LO = torch.cat([_P_LO, _H_LO])   # (11,)
 Z_HI = torch.cat([_P_HI, _H_HI])   # (11,)
 
-# Per-parameter sigma bounds
+# We define standard deviation boundaries to control variational distribution spreads
 _SIGMA_MIN_VALS = torch.tensor(
     [5e-4, 5e-4, 5e-4, 5e-4, 5e-4, 5e-4, 5e-4, 1e-3, 0.50, 1e-3, 0.50],
     dtype=torch.float32)
@@ -48,30 +46,27 @@ _SIGMA_MAX_VALS = torch.tensor(
     [0.30, 0.30, 0.30, 0.30, 0.30, 0.30, 0.30, 0.10, 40.0, 0.10, 50.0],
     dtype=torch.float32)
 
+# Convert min/max standard deviation boundaries into log space for stability
 LOG_SIGMA_MIN = torch.log(_SIGMA_MIN_VALS)
 LOG_SIGMA_MAX = torch.log(_SIGMA_MAX_VALS)
 
-
-# ---------------------------------------------------------------------------
-# Sinusoidal positional encoding of calendar DOY
-# ---------------------------------------------------------------------------
-class DOYPositionalEncoding(nn.Module):
+class DOYPositionalEncoding(nn.Module): # Sinusoidal positional encoding of calendar DOY
     def __init__(self, d_model: int, n_annual_harmonics: int = 4):
         super().__init__()
         self.d_model = d_model
         self.n_annual_harmonics = n_annual_harmonics
         n_annual_feats = 2 * n_annual_harmonics
-        self.proj = nn.Linear(n_annual_feats + d_model, d_model, bias=False)
+        self.proj = nn.Linear(n_annual_feats + d_model, d_model, bias=False) # Projection layer to compress combined calendar and spacing contexts to embedding size
 
     def forward(self, doys: torch.Tensor) -> torch.Tensor:
         B, T = doys.shape
         device = doys.device
         annual_feats = []
-        for k in range(1, self.n_annual_harmonics + 1):
+        for k in range(1, self.n_annual_harmonics + 1): # Calculate cyclical sine and cosine values across 4 multi-frequency calendar intervals
             annual_feats.append(torch.sin(2 * math.pi * k * doys / 365.0))
             annual_feats.append(torch.cos(2 * math.pi * k * doys / 365.0))
         annual = torch.stack(annual_feats, dim=-1)
-        d = self.d_model
+        d = self.d_model # Build standard relative spacing positional embeddings
         pos = doys.unsqueeze(-1).float()
         div = torch.exp(
             torch.arange(0, d, 2, dtype=torch.float32, device=device)
@@ -79,14 +74,11 @@ class DOYPositionalEncoding(nn.Module):
         std_pe = torch.zeros(B, T, d, device=device)
         std_pe[:, :, 0::2] = torch.sin(pos * div)
         std_pe[:, :, 1::2] = torch.cos(pos * div[:d // 2])
-        combined = torch.cat([annual, std_pe], dim=-1)
+        combined = torch.cat([annual, std_pe], dim=-1) # Bind cyclical and standard features along last axis and project down
         return self.proj(combined)
 
 
-# ---------------------------------------------------------------------------
-# Parameter-specific attention pooling
-# ---------------------------------------------------------------------------
-class ParameterSpecificAttentionPooling(nn.Module):
+class ParameterSpecificAttentionPooling(nn.Module): # Parameter-specific attention pooling
     """
     11 learned query vectors, one per latent parameter.
 
@@ -104,26 +96,23 @@ class ParameterSpecificAttentionPooling(nn.Module):
         super().__init__()
         self.n_params = n_params
         self.d_model  = d_model
-        self.queries  = nn.Parameter(torch.empty(1, n_params, d_model))
+        self.queries  = nn.Parameter(torch.empty(1, n_params, d_model)) # Initialise 11 independent learned query vector embeddings
         nn.init.xavier_uniform_(self.queries)
         self.cross_attn = nn.MultiheadAttention(
-            embed_dim=d_model, num_heads=n_heads, batch_first=True)
+            embed_dim=d_model, num_heads=n_heads, batch_first=True) # Configure multihead attention mechanics to execute cross-pooling operations
 
     def forward(self, x: torch.Tensor,
                 mask: torch.BoolTensor) -> torch.Tensor:
         # x: (B, T, d_model); mask: (B, T) True=valid
-        B = x.shape[0]
-        queries = self.queries.expand(B, -1, -1)     # (B, 11, d_model)
+        B = x.shape[0] 
+        queries = self.queries.expand(B, -1, -1)     # (B, 11, d_model); Expand latent query parameter shapes across batch items
         pooled, _ = self.cross_attn(
             query=queries, key=x, value=x,
-            key_padding_mask=~mask)                   # (B, 11, d_model)
+            key_padding_mask=~mask)                   # (B, 11, d_model); Run cross-attention over sequence parameters while masking out empty padded slots
         return pooled
 
 
-# ---------------------------------------------------------------------------
-# Main encoder
-# ---------------------------------------------------------------------------
-class ARCVAEEncoder(nn.Module):
+class ARCVAEEncoder(nn.Module): #main encoder
     N_BANDS  = 10
     N_ANGLES = 3
     N_PARAMS = 11
@@ -136,7 +125,7 @@ class ARCVAEEncoder(nn.Module):
         # always overridden to N_PARAMS internally.
         self.d_model = d_model
 
-        # Input normalisation constants
+        # Input normalisation constants as model state buffers
         self.register_buffer("refl_mean",
             torch.tensor([0.06,0.08,0.06,0.10,0.20,0.24,0.25,0.25,0.12,0.08],
                          dtype=torch.float32))
@@ -154,13 +143,13 @@ class ARCVAEEncoder(nn.Module):
         self.register_buffer("log_sigma_min", LOG_SIGMA_MIN)
         self.register_buffer("log_sigma_max", LOG_SIGMA_MAX)
 
-        # Input projection
+        # Input projection (map 13 normalise input dimensions up to transformer embedding space size)
         self.input_proj = nn.Linear(self.N_BANDS + self.N_ANGLES, d_model)
 
         # Positional encoding
         self.pos_enc = DOYPositionalEncoding(d_model, n_annual_harmonics)
 
-        # Transformer encoder
+        # Transformer encoder (build sequence layers using standard Pre-LayerNorm configuration mechanics)
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=d_model, nhead=n_heads, dim_feedforward=d_ff,
             dropout=dropout, batch_first=True, norm_first=True)
@@ -194,14 +183,17 @@ class ARCVAEEncoder(nn.Module):
                     nn.init.zeros_(m.bias)
 
     def _normalise_inputs(self, s2_refl, angles):
+      # Scale incoming raw bands and multi-angle viewing dimensions
         r_norm = (s2_refl - self.refl_mean) / (self.refl_std + 1e-8)
         a_norm = (angles  - self.ang_mean)  / (self.ang_std  + 1e-8)
         return torch.cat([r_norm, a_norm], dim=-1)
 
     def _constrain_mu(self, raw_mu):
+      # Clip inferred mean coordinates within strict bounds via sigmoid scaling
         return self.z_lo + torch.sigmoid(raw_mu) * (self.z_hi - self.z_lo)
 
     def _constrain_sigma(self, raw_logstd):
+      # Clip generated log uncertainties within configured validation ranges
         log_sigma = (self.log_sigma_min
                      + torch.sigmoid(raw_logstd)
                      * (self.log_sigma_max - self.log_sigma_min))
@@ -219,7 +211,7 @@ class ARCVAEEncoder(nn.Module):
         # 3. Transformer encoder
         h = self.transformer(x, src_key_padding_mask=~obs_mask)
 
-        # 4. Parameter-specific pooling → (B, 11, d_model)
+        # 4. Parameter-specific pooling --> (B, 11, d_model)
         contexts = self.pool(h, obs_mask)
 
         # 5. Per-parameter heads via batched dot product
