@@ -293,6 +293,8 @@ We validate model performance on real world data using the Munich-North-Isar dat
 
 
 Integration of SAR data - less missing observations etc.
+Within field performance
+...
 
 ## 5. Video Summary
 
