@@ -96,7 +96,7 @@ Simultaneously, with respect to the VAE framework, the ARC archetype provides a 
 The ARC-VAE encoder maps a variable-length time series of cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $\mathbb{R}^7$ are biophysical scaling parameters and **h** $\in$ $\mathbb{R}^4$ are phenological timing parameters. At inference, the posterior mean $**\mu**$ is used as a point estimate, allowing for mapping from the observed time series to a full seasonal biophysical parameter trajectory in a single forward pass. The data generation and architecture is described in detail in Sections 3.1.1-3.1.6, and depicted in Figure 4 below.
 
 <p align="center">
-  <img src="/images/ARCVAEArchitecture.png" width="100%" alt="PROSAIL-VAE">
+  <img src="/images/ARCVAEArchitecture1.png" width="100%" alt="PROSAIL-VAE">
   <br>
   <em>Figure 4: Architecture diagram of the ARC-VAE model.</em>
 
