@@ -656,8 +656,9 @@ Project Link: `https://github.com/harryfyjiswalker/arc-vae`
 
 ## Acknowledgements
 
+- This works takes direct inspiration from the work of: Yin, F., Lewis, P.E., Gómez-Dans, J.L. and Weiß, T. (2025) in 'Archetypal crop trait dynamics for enhanced retrieval of biophysical parameters from Sentinel-2 MSI'; Mensah, P., Aderinto, P.V., Yusuf, I.S. and Pretorius, A. (2025) in 'Physics informed Transformer-VAE for biophysical parameter estimation: PROSAIL model inversion in Sentinel-2 imagery'; and Zérah, Y., Valero, S. and Inglada, J. (2024) in 'Physics-constrained deep learning for biophysical parameter retrieval from Sentinel-2 images: Inversion of the PROSAIL model'
+- The ARC model decoder is fully based on the ARC model code of Yin _et al._ (2025), available at https://github.com/MarcYin/ARC; Dr Feng Yin also provided the MNI validation data, originally collected by Danner _et al._ (2019). Further, the differentiable PROSAIL implementation is based on the code of Mensah _et al._ (2025), available at: https://github.com/princeemensah/transformer-prosailvae.
 - This project is submitted as part of an coursework for **GEOL0069 – Artificial Intelligence for Earth Observation**, UCL Earth Sciences Department.
-- The ARC model decoder is fully based on the ARC model code of Yin _et al._ (2025), available at https://github.com/MarcYin/ARC; Dr Feng Yin also provided the MNI validation data, originally collected by Danner _et al._ (2019). Further, the differentiable PROSAIL implementation is based on the code of Mensah _et al._ (2025), available at: https://github.com/harryfyjiswalker/transformer-prosailvae.
 
 
 
