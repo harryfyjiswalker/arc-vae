@@ -46,7 +46,8 @@
 </details>
 
 ## 1. Project Overview
----
+
+This project involves the integration of the Archetypal Crop Trait Dynamics (ARC) model into a Transformer-VAE architecture, aiming to allow efficient extraction of time series of biophysical parameters. The model is trained on synthetic data, prior to validation on both held-out synthetic test data and Leaf Area Index field data from the Munich North Isar site.
 
 ## 2. Background
 
