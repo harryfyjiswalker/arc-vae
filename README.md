@@ -41,15 +41,15 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 <p align="center">
   <img src="/images/PROSAILdiagram.png" width="60%" alt="PROSAIL flow">
   <br>
-  <em>Figure 1: Diagram of Remote Sensing Technique: PROSAIL Radiative Transfer Model.[14]</em>
+  <em>Figure 1: Diagram of Remote Sensing Technique: PROSAIL Radiative Transfer Model.</em>
 
 </p>
 
-The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables. However, due to the time-consuming and expensive nature of collection, field data on biophysical parameters is scarce, limiting the applicability of supervised learning methods.[12] Radiative transfer models (RTMs), which directly simulate the spectral and bidrectional reflectance of a crop canopy from its biophysical and biochemical properties, have therefore become foundational in this context (Verrelst et al., 2025), as their inversion - that is, reversing the problem to use known bidrectional reflectance data as input - can enable retrieval of these properties without the need for calibration with ground truth data.[1][5]
+The increasing availability of remote sensing data has the potential to enable scalable mapping of these variables. However, due to the time-consuming and expensive nature of collection, field data on biophysical parameters is scarce, limiting the applicability of supervised learning methods.[12] Radiative transfer models (RTMs), which directly simulate the spectral and bidrectional reflectance of a crop canopy from its biophysical and biochemical properties, have therefore become foundational in this context [13], as their inversion - that is, reversing the problem to use known bidrectional reflectance data as input - can enable retrieval of these properties without the need for calibration with ground truth data.[1][5]
 
-Among the most widely used RTMs is the PROSAIL model (Fig. 1), which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models.[6] PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties.[7][8] Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration ($C_{ab}$), and leaf water content ($C_w$) - it has been expanded to incorporate additional variables including dry matter content ($C_m$), leaf mass per area (LMA), brown pigments ($C_{bp}$), total carotenoid content ($C_{cx}$, leaf anthocyanin content ($C_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC).[9][10] SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather than a single leaf.[citation?]
+Among the most widely used RTMs is the PROSAIL model (Fig. 1), which couples the PROSPECT leaf optical properties and SAIL canopy bidrectional reflectance models.[6] PROSPECT, first developed by Jacquemoud and Baret (1990), simulates the reflectance and transmittance of a single leaf as a function of its biophysical properties.[7][8] Initially only employing three input parameters - leaf mesophyll (N), chlorophyll a and b concentration ($C_{ab}$), and leaf water content ($C_w$) - it has been expanded to incorporate additional variables including dry matter content ($C_m$), leaf mass per area (LMA), brown pigments ($C_{bp}$), total carotenoid content ($C_{cx}$, leaf anthocyanin content ($C_{anth}$, PROSPECT-D), and, most recently in PROSPECT-PRO, the subdivision of LMA into leaf protein content and carbon-based constituents (CBC).[9][10] SAIL then extends PROSPECT, simulating how light interacts with a full plant canopy, rather than a single leaf.[6]
 
-However, the practical utility of PROSAIL and other RTMs in monitoring applications has traditionally faced a number of limitations. RTM parameter estimation from earth observation data is considered ill-posed: inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality).[11] Further, the computational intensity of inversion limits the scalability of RTM inversion-based models (Verrelst et al., 2025)[12][13], while difficulties in capturing the temporal evolution of crop trait dynamics over a growing season constrains their accuracy in downstream tasks such as yield prediction.[1]
+However, the practical utility of PROSAIL and other RTMs in monitoring applications has traditionally faced a number of limitations. RTM parameter estimation from earth observation data is considered ill-posed: inversion typically treats each observation as an independent event, meaning that distinct combinations of biophysical parameters at certain time stamps produce identical spectral signals (equifinality).[11] Further, the computational intensity of inversion limits the scalability of RTM inversion-based models [12][13][14], while difficulties in capturing the temporal evolution of crop trait dynamics over a growing season constrains their accuracy in downstream tasks such as yield prediction.[1]
 
 #### 2.1.2 Archetypal Crop Trait Dynamics (ARC)
 
@@ -79,13 +79,13 @@ This approach demonstrates impressive performance in validation. Using archetype
 
 </p>
 
-Simultaneously, recent physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion. Alongside the popular SNAP biophysical processor developed by the European Space Agency [15], Zerah _et al._ (2024) introduced PROSAIL-VAE, which embeds a differentiable PROSAIL decoder into a variational autoencoder. The authors train the model on Sentinel-2 imagery from fourteen western European tiles without requiring ground-truth biophysical labels, achieving probabilistic inversion of all PROSAIL parameters with LAI accuracy rivalling SNAP.[14] Mensah _et al._ (2025) then demonstrated that an equivalent Transformer-VAE trained exclusively on PROSAIL-simulated data achieves comparable LAI retrieval accuracy (RMSE 0.99 vs 1.16 for PROSAIL-VAE across all test sites), substantially reducing the data requirements of the hybrid approach.[13] However, these approaches involve single-date inversion, limiting their utility in downstream tasks such as yield prediction that benefit from richer phenological data. Further, the models of both Zerah _et al._ and Mensah _et al._ employ independent uniform distributions within physiological bounds as the prior, which constrains parameters to plausible ranges but encodes no crop- or region-specific information.
+Simultaneously, recent physics-informed deep learning architectures have exhibited success in accurate single-date radiative transfer model inversion. Alongside the popular SNAP biophysical processor developed by the European Space Agency [16], Zerah _et al._ (2024) introduced PROSAIL-VAE, which embeds a differentiable PROSAIL decoder into a variational autoencoder. The authors train the model on Sentinel-2 imagery from fourteen western European tiles without requiring ground-truth biophysical labels, achieving probabilistic inversion of all PROSAIL parameters with LAI accuracy rivalling SNAP.[15] Mensah _et al._ (2025) then demonstrated that an equivalent Transformer-VAE trained exclusively on PROSAIL-simulated data achieves comparable LAI retrieval accuracy (RMSE 0.99 vs 1.16 for PROSAIL-VAE across all test sites), substantially reducing the data requirements of the hybrid approach.[14] However, these approaches involve single-date inversion, limiting their utility in downstream tasks such as yield prediction that benefit from richer phenological data. Further, the models of both Zerah _et al._ and Mensah _et al._ employ independent uniform distributions within physiological bounds as the prior, which constrains parameters to plausible ranges but encodes no crop- or region-specific information.
 
 ### 2.2. ARC-VAE
 
-For this project, we therefore investigate whether integrating ARC's archetype and decoder into these VAE-based frameworks can combine the complementary strengths of both approaches. We consider that, with respect to ARC, the VAE framework would allow amortisation of the cost of inference through a learned encoder. ARC's Monte Carlo solver requires  $N_{MC} = 2 \times 10^6$ PROSAIL forward model evaluations per pixel at inference time, which is paid independently for each pixel, year, and region. In contrast, a trained VAE encoder would enable mapping of the full S2 time series directly to the posterior distribution over $(p,h)$ in a single forward pass, with the computational cost of training paid once on simulations sampled from the archetype prior distribution. 
+For this project, we therefore investigate whether integrating the ARC model (here, we use the 'maize' archetype) as a decoder into these VAE-based frameworks can combine the complementary strengths of both approaches. We consider that, with respect to ARC, the VAE framework would allow amortisation of the cost of inference through a learned encoder. ARC's Monte Carlo solver requires  $N_{MC} = 2 \times 10^6$ PROSAIL forward model evaluations per pixel at inference time, which is paid independently for each pixel, year, and region. In contrast, a trained VAE encoder would enable mapping of the full S2 time series directly to the posterior distribution over $(p,h)$ in a single forward pass, with the computational cost of training paid once on simulations sampled from the archetype prior distribution. 
 
-Simultaneously, with respect to the VAE framework, the ARC archetype provides a structured prior over $(p,h)$ -- the posterior distribution of scaling and phenological parameters derived from Sentinel-2 observations -- which naturally replaces the crop-agnostic uniform distributions of Zerah _et al._ and Mensah _et al._ with a physically-grounded, temporally-resolved description of expected canopy dynamics specific to a given crop. Further, the ARC decoder enables extraction of the development trajectory of biophysical parameters over the full growing season rather than solely single-date inversion.
+Simultaneously, with respect to the VAE framework, the ARC archetype provides a crop-specific prior over $(p,h)$ -- the posterior distribution of scaling and phenological parameters derived from Sentinel-2 observations -- which naturally replaces the crop-agnostic uniform distributions of Zerah _et al._ and Mensah _et al._ with a physically-grounded, temporally-resolved description of expected canopy dynamics specific to a given crop. Further, the ARC decoder enables extraction of the development trajectory of biophysical parameters over the full growing season rather than solely single-date inversion.[11][14][15]
 
 ## 3. Remote Sensing Technique and Model Architecture
 
@@ -93,7 +93,7 @@ Simultaneously, with respect to the VAE framework, the ARC archetype provides a 
 
 ### 3.2 ARC-VAE Architecture
 
-The ARC-VAE encoder maps a variable-length time series of cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $\mathbb{R}^7$ are biophysical scaling parameters and **h** $\in$ $\mathbb{R}^4$ are phenological timing parameters. At inference, the posterior mean $**\mu**$ is used as a point estimate, allowing for mapping from the observed time series to a full seasonal biophysical parameter trajectory in a single forward pass. The data generation and architecture is described in detail in Sections 3.1.1-3.1.6, and depicted in Figure 4 below.
+The ARC-VAE encoder maps a variable-length time series of cloud-free Sentinel-2 surface reflectance observations to a posterior distribution over the 11 ARC parameters **z** = (**p**,**h**), where **p** $\in$ $\mathbb{R}^7$ are biophysical scaling parameters and **h** $\in$ $\mathbb{R}^4$ are phenological timing parameters. At inference, the posterior mean $**\mu**$ is used as a point estimate, allowing for mapping from the observed time series to a full seasonal biophysical parameter trajectory in a single forward pass. The data generation and architecture is described in detail in Sections 3.2.1-3.2.7, and depicted in Figure 4 below.
 
 <p align="center">
   <img src="/images/ARCVAEArchitecture1.png" width="100%" alt="PROSAIL-VAE">
@@ -216,7 +216,11 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 #### 3.6.7
 
-At inference, ...
+At inference, given a Sentinel-2 time series for a target pixel or field, the decoder is discarded and the trained encoder performs a single forward pass to produce the posterior distribution $q(z|x)$ over all 11 ARC scaling parameters. The posterior mean $\mu = (\hat{p}, \hat{h}) is taken as the point estimate, and the posterior standard deviation $\sigma$ is retained as a per-parameter uncertainty estimate. 
+
+Cloud-affected or missing acquisiton dates are handled via the same padding and masking mechanism used during training, with the encoder attending only over valid, cloud-free observations. This means that no imputation or pre-processing of gaps is required and aims to mirror the robustness of ARC to irregular and sparse temporal signals.
+
+The archetype model is then used to reconstruct the full seasonal trajectory of each of the seven biophysical parameters.
 
 [Discuss sentinel-2 stuff]
 
@@ -237,7 +241,7 @@ We perform initial comparative analysis of ARC-VAE and ARC on synthetic test dat
 
 ##### 4.1.1 Biophysical Parameter Time Series and Latent Variable Reconstruction
 
-In terms of biophysical parameter reconstruction, our results (Table 2) suggest that ARC-VAE can rival ARC on synthetic data. ARC-VAE exhibits superior $R^2$ and RMSE for five of seven biophysical parameters; notable gains are observed for nitrogen and water content elucidation (N and $C_w$, respectively), while performance on LAI, $C_m$, and ALA is very similar between the two models. By contrast, ARC slightly outperforms ARC-VAE on $C_{ab}$ reconstruction, and shows significantly superior performance for $C_{\text{brown}}$.
+In terms of biophysical parameter reconstruction, comparisons of performance on synthetic data with ARC results (Table 2) are initially promising. ARC-VAE exhibits superior $R^2$ and RMSE for five of seven biophysical parameters; notable gains are observed for nitrogen and water content elucidation (N and $C_w$, respectively), while performance on LAI, $C_m$, and ALA is very similar between the two models. By contrast, ARC slightly outperforms ARC-VAE on $C_{ab}$ reconstruction, and shows significantly superior performance for $C_{\text{brown}}$.
 
 <p align="center">
   <img src="/images/BioParamRecon.png" width="30%" alt="PROSAIL flow">
@@ -257,15 +261,12 @@ However, plotting the median time series for each parameter (Figure 4) suggests 
 
 Some insight into these failure modes can be gleaned from reconstruction accuracy of the **(p,h)** latent variables (Table 3). ARC-VAE outperforms ARC across all magnitude parameters **$p$**, while the opposite occurs for the phenological timing parameters **$h$**. Most striking is the VAE model's complete failure to capture the parameters defining green-up and senescence ($h_{\text{growth}}$ and $h_{\text{senes}}$, respectively), which may explain its difficulties in faithfully capturing trajectories early and late in the season. 
 
-
 <p align="center">
   <img src="/images/LatentVariableRecon.png" width="30%" alt="PROSAIL flow">
   <br>
   <em>Table 3. Latent variable reconstruction performance.</em>
 
 </p>
-
-##### 4.1.3 Performance as a function of number of observations
 
 The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ suggests that the model may struggle when the full set of seasonal observations are not available to constrain start and end dates, potentially severely limiting its utility where cloud cover is high. We therefore compare the LAI reconstruction $R^2$ and RMSE of ARC-VAE compared to ARC as a function of the number of observations (Figure 5).
 
@@ -296,16 +297,16 @@ Integration of SAR data - less missing observations etc.
 Within field performance
 ...
 
-## 5. Video Summary
 
 
-## 6. Environmental Cost Analysis
+
+## 5. Environmental Cost Analysis
 
 We consider that the main sources of energy usage and emissions in this project result from: data generation, training, and inference; generative AI usage; and Sentinel-2 data extraction. 
 
-### 6.1 Computational Energy Cost and Carbon Footprint
+### 5.1 Computational Energy Cost and Carbon Footprint
 
-#### 6.1.1 Synthetic Data Generation, Training, and Inference
+#### 5.1.1 Synthetic Data Generation, Training, and Inference
 
 | Phase | Duration | Energy (Wh) | Carbon (g CO₂eq) |
 |---|---:|---:|---:|
@@ -317,16 +318,24 @@ We consider that the main sources of energy usage and emissions in this project 
 
 Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab.
 
-#### 6.1.2 Generative AI Usage
+#### 5.1.2 Generative AI Usage
 
 
-#### 6.1.3 Validation Data Acquisition
+#### 5.1.3 Validation Data Acquisition
 
 The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the European Space Agency Copernicus programme using the Sentinel-2 mission, which involves substantial upfront environment expenditure associated with satellite manufacturing, launch, and long-term mission operations. Similarly, agricultural field campaign sites such as Munich-North-Isar require manufacture of specialised sensing instruments, repeated technician travel, and long-term site maintenance. However, both of these costs are amortised across large numbers of observations, users, and downstream applications and are thus considered negligible with respect to this project. As a result, for model validation, the primary costs are the extraction of the relevant Sentinel-2 scenes from the Amazon Web Services API and inference of the ARC-VAE and ARC models on these scenes.
 
 ... Quantify this
 
-### Environmental Benefits
+### 5.2 Environmental Benefits
+
+## 6. Video Summary
+
+<p align="center">
+  <a href="https://youtu.be/BT13vxDiuNI">
+    <img src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg" alt="Watch the video" width="600">
+  </a>
+</p>
 
 ---
 
@@ -424,16 +433,13 @@ EGU General Assembly 2020, ser. EGU2020-5251, Online, 4–8 May 2020.
 
 [12] Zérah, Y., Valero, S. and Inglada, J. (2024) 'Physics-constrained deep learning for biophysical parameter retrieval from Sentinel-2 images: Inversion of the PROSAIL model', Remote Sensing of Environment, 312, 114309. Available at: https://doi.org/10.1016/j.rse.2024.114309.
 
-[13] Mensah, P., Aderinto, P.V., Yusuf, I.S. and Pretorius, A. (2025) 'Physics informed Transformer-VAE for biophysical parameter estimation: PROSAIL model inversion in Sentinel-2 imagery', arXiv preprint arXiv:2511.10387. Available at: https://arxiv.org/abs/2511.10387.
+[13] Verrelst, Jochem, Miguel Morata, José Luis García-Soria, Yilin Sun, Jianbo Qi, and Juan Pablo Rivera-Caicedo. 2025. "RTM Surrogate Modeling in Optical Remote Sensing: A Review of Emulation for Vegetation and Atmosphere Applications" Remote Sensing 17, no. 21: 3618. https://doi.org/10.3390/rs17213618
 
-[14] Zérah, Y., 2024. Biophysical parameter retrieval from Sentinel-2 images using physics-driven deep learning for PROSAIL inversion. Séries Temporelles, 27 October. Available at: https://www.cesbio.cnrs.fr/multitemp/biophysical-parameter-retrieval-from-sentinel-2-images-using-physics-driven-deep-learning-for-prosail-inversion/ [Accessed 18 May 2026].
+[14] Mensah, P., Aderinto, P.V., Yusuf, I.S. and Pretorius, A. (2025) 'Physics informed Transformer-VAE for biophysical parameter estimation: PROSAIL model inversion in Sentinel-2 imagery', arXiv preprint arXiv:2511.10387. Available at: https://arxiv.org/abs/2511.10387.
 
-[15] European Space Agency (n.d.) Biophysical Processor Overview. SNAP Online Help. Available at: https://step.esa.int/main/wp-content/help/versions/13.0.0/snap-toolboxes/eu.esa.opt.opttbx.biophysical/BiophysicalOpOverview.html (Accessed: 18 May 2026).
+[15] Zérah, Y., 2024. Biophysical parameter retrieval from Sentinel-2 images using physics-driven deep learning for PROSAIL inversion. Séries Temporelles, 27 October. Available at: https://www.cesbio.cnrs.fr/multitemp/biophysical-parameter-retrieval-from-sentinel-2-images-using-physics-driven-deep-learning-for-prosail-inversion/ [Accessed 18 May 2026].
 
-
-Verrelst, Jochem, Miguel Morata, José Luis García-Soria, Yilin Sun, Jianbo Qi, and Juan Pablo Rivera-Caicedo. 2025. "RTM Surrogate Modeling in Optical Remote Sensing: A Review of Emulation for Vegetation and Atmosphere Applications" Remote Sensing 17, no. 21: 3618. https://doi.org/10.3390/rs17213618
-
-
+[16] European Space Agency (n.d.) Biophysical Processor Overview. SNAP Online Help. Available at: https://step.esa.int/main/wp-content/help/versions/13.0.0/snap-toolboxes/eu.esa.opt.opttbx.biophysical/BiophysicalOpOverview.html (Accessed: 18 May 2026).
 
 ---
 
@@ -441,17 +447,15 @@ Verrelst, Jochem, Miguel Morata, José Luis García-Soria, Yilin Sun, Jianbo Qi,
 
 **Harry Fyjis-Walker** – harryfyjiswalker@gmail.com 
 
-Project Link: `https://github.com/harryfyjiswalker/GEOL0069-Week4`
+Project Link: `https://github.com/harryfyjiswalker/arc-vae`
 
 ---
 
 ## Acknowledgements
 
-- This project is submitted as part of an assignment for **GEOL0069 – Artificial Intelligence for Earth Observation**, UCL Earth Sciences Department.
-- Base notebook and course materials provided by **Dr Michel Tsamados**, UCL.
-- Sentinel-3 data courtesy of the **European Space Agency (ESA)** / Copernicus programme.
+- This project is submitted as part of an coursework for **GEOL0069 – Artificial Intelligence for Earth Observation**, UCL Earth Sciences Department.
+- MNI Validation data courtesy of the **European Space Agency (ESA)** / Copernicus programme.
 
-<p align="right"><a href="#sea-ice--lead-classification-via-unsupervised-learning">Back to top</a></p>
 
 
 
