@@ -219,8 +219,6 @@ Cloud-affected or missing acquisiton dates are handled via the same padding and 
 
 The archetype model is then used to reconstruct the full seasonal trajectory of each of the seven biophysical parameters.
 
-[Discuss sentinel-2 stuff]
-
 ### 4. Results and Comparison to ARC
 
 #### 4.1 Performance on Synthetic Test Data
@@ -272,13 +270,11 @@ The poor performance of ARC-VAE on $h_{\text{growth}}$ and $h_{\text{senes}}$ su
 <p align="center">
   <img src="/images/regional_and_field_panels.png" width="90%" alt="PROSAIL flow">
   <br>
-  <em>Table 3. Latent variable reconstruction performance.</em>
+  <em>Figure 5. Maize fields used in this study, from the Munich-North-Isar dataset.[17]</em>
 
 </p>
 
-We validate model performance on real world data using the Munich-North-Isar dataset, which includes LAI measurements for various fields for 2017 and 2018. NB specify dates. [It has the addded advantage of not requiring pre-specified growing season dates, which may be beneficial for larger scale mapping.]
-
-
+We validate model performance on in-situ LAI measurements from the Munich-North-Isar test site collected across the season in 2017 and 2018 for three maize fields (Figure 5). Within each field, data points are obtained at three locations. The data collection process is described in detail by Danner _et al._ (2019).[17] 
 
 <p align="center">
   <img src="/images/Field Validation Results1.png" width="60%" alt="PROSAIL flow">
@@ -287,15 +283,13 @@ We validate model performance on real world data using the Munich-North-Isar dat
 
 </p>
 
+While more extensive validation is required to draw confident conclusions, initial results appear to confirm the foreseen issues of vulnerability to sparse observations. We observe that where many observations are available (Field 508, 2018), the ARC-VAE model may outperform ARC, here achieving RMSE and $R^2$ of 0.818 and 0.751, respectively, compared to ARC's 1.448 and 0.665. Meanwhile, while ARC maintains strong performance for fields where observations are sparse - achieving RMSE of 0.670 and $R^2$ of 0.884 for LAI on Field 515 (2017), the ARC-VAE fails to effectiely capture the LAI trajectory. 
+
 #### Discussion, Limitations, and Future Work
 
+In conclusion, in this coursework, we design a physics-constrained variational autoencoder architecture that significantly increases retrieval speed of biophysical parameter time-series compared to ARC. Initial validation results are promising when many observations are available, suggesting that this architecture may provide a useful base for further development. However, while ARC maintains strong predictive capability when observations are sparse, significant performance degradation of ARC-VAE is observed when observations are sparse, limiting the utility of the model in its current state. 
 
-Integration of SAR data - less missing observations etc.
-Within field performance
-...
-
-
-
+Alongside more extensive ground truth validation, useful further work could involve increasing the percentage of simulated cloud cover during training, and the integration of remote sensing data that are unaffected by cloud cover, such as Synthetic Aperture Radar (SAR) data.
 
 ## 5. Environmental Cost Analysis
 
@@ -471,6 +465,10 @@ EGU General Assembly 2020, ser. EGU2020-5251, Online, 4–8 May 2020.
 [15] Zérah, Y., 2024. Biophysical parameter retrieval from Sentinel-2 images using physics-driven deep learning for PROSAIL inversion. Séries Temporelles, 27 October. Available at: https://www.cesbio.cnrs.fr/multitemp/biophysical-parameter-retrieval-from-sentinel-2-images-using-physics-driven-deep-learning-for-prosail-inversion/ [Accessed 18 May 2026].
 
 [16] European Space Agency (n.d.) Biophysical Processor Overview. SNAP Online Help. Available at: https://step.esa.int/main/wp-content/help/versions/13.0.0/snap-toolboxes/eu.esa.opt.opttbx.biophysical/BiophysicalOpOverview.html (Accessed: 18 May 2026).
+
+[17] Danner, M., Berger, K., Wocher, M., Mauser, W. and Hank, T., 2019. Fitted PROSAIL parameterization of leaf inclinations, water content and brown pigment content for winter wheat and maize canopies. Remote Sensing, 11(10), p.1150. Available at: https://doi.org/10.3390/rs11101150.
+
+[18] Weiß, T., Ramsauer, T., Jagdhuber, T., Löw, A. and Marzahn, P., 2021. Sentinel-1 Backscatter Analysis and Radiative Transfer Modeling of Dense Winter Wheat Time Series. Remote Sensing, 13(12), p.2320. Available at: https://doi.org/10.3390/rs13122320.
 
 ---
 
