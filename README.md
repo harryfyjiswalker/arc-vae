@@ -8,19 +8,40 @@
 
 1. [Project Overview](#1-project-overview)
 2. [Background](#2-background)
-   - [Biophysical Parameters and Radiative Transfer Models](#21-arctic-leads)
-   - [Current Approaches and Challenges](#22-sar-radar-altimeter)
-   - [ARC-VAE](#23-clustering-algorithms)
-3. [Data and Methods](#3-methods)
-   - [Data & Preprocessing](#31-data--preprocessing)
-4. [Discussion and Results](#4-discussion-and-results)
-   - [Performance on Synthetic Data](#41-feature-space-analysis)
-   - [Field Validation](#42-echo-waveform-analysis)
-5. [Getting Started](#getting-started)
-6. [Repository Structure](#repository-structure)
-7. [References](#references)
-8. [Contact](#contact)
-9. [Acknowledgements](#acknowledgements)
+   - [Biophysical Parameter Extraction](#21-biophysical-parameter-extraction)
+     - [Radiative Transfer Models and Challenges](#211-radiative-transfer-models-and-challenges)
+     - [Archetypal Crop Trait Dynamics (ARC)](#212-archetypal-crop-trait-dynamics-arc)
+     - [Variational Autoencoders and PROSAIL-VAE](#213-variational-autoencoders-and-prosail-vae)
+   - [ARC-VAE](#22-arc-vae)
+3. [Remote Sensing Technique and Model Architecture](#3-remote-sensing-technique-and-model-architecture)
+   - [Sentinel-2](#31-sentinel-2)
+   - [ARC-VAE Architecture](#32-arc-vae-architecture)
+     - [Synthetic Training Data Generation](#321-synthetic-training-data-generation)
+     - [Input Representation](#322-input-representation)
+     - [Transformer Encoder](#323-transformer-encoder)
+     - [Decoder](#324-decoder)
+     - [Training objective](#325-training-objective)
+     - [Training Protocol](#326-training-protocol)
+4. [Results and Comparison to ARC](#4-results-and-comparison-to-arc)
+   - [Performance on Synthetic Test Data](#41-performance-on-synthetic-test-data)
+     - [Biophysical Parameter Time Series and Latent Variable Reconstruction](#411-biophysical-parameter-time-series-and-latent-variable-reconstruction)
+   - [Performance on MNI Field Data](#42-performance-on-mni-field-data)
+5. [Environmental Cost Analysis](#5-environmental-cost-analysis)
+   - [Computational Energy Cost and Carbon Footprint](#51-computational-energy-cost-and-carbon-footprint)
+     - [Synthetic Data Generation, S2 acquisition, Training, and Inference](#511-synthetic-data-generation-s2-acquisition-training-and-inference)
+     - [Generative AI Usage](#512-generative-ai-usage)
+     - [Validation Data Acquisition](#513-validation-data-acquisition)
+   - [Environmental Benefits](#52-environmental-benefits)
+6. [Video Summary](#6-video-summary)
+7. [Code and Repository Structure](#code-and-repository-structure)
+8. [Data Availability](#data-availability)
+9. [Using ARC-VAE](#using-arc-vae)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+   - [Data](#data)
+10. [References](#references)
+11. [Contact](#contact)
+12. [Acknowledgements](#acknowledgements)
 
 </details>
 
@@ -297,10 +318,17 @@ We consider that the main sources of energy usage and emissions in this project 
 
 ### 5.1 Computational Energy Cost and Carbon Footprint
 
-#### 5.1.1 Synthetic Data Generation, Training, and Inference
+#### 5.1.1 Synthetic Data Generation, S2 acquisition, Training, and Inference
 
+Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We calculate carbon costs estimated using an estimated average T4 GPU power draw of 50W (the T4 Thermal Design Power (TDP) is 70W; a typical load is expected to lie at approximately 40W to 65W [18]) and a global average grid carbon intensity of approximately I = 475 g$CO_2$eq/kWh [19]. Energy in Wh and carbon usage in (g CO₂eq) is then calculated using
+<p align="center">
+  $$E_{Wh} = \frac{P_W \times t_s}{3600}$$
+  <br>
+  $$C_{gCO_2eq} = \frac{E_{Wh}}{1000} \times I$$
+</p>
+where $P_w$ is the power in Watts, $t_s$ is time in seconds, and $I$ is the global average grid carbon intensity.
 
-Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We calculate carbon costs estimated using an estimated average T4 GPU power draw of 50W (the T4 Thermal Design Power (TDP) is 70W; a typical load is expected to lie at approximately 40W to 65W [18]) and a global average grid carbon intensity of approximately 475 g$CO_2$eq/kWh [19]. We cross-check the obtained values using the CodeCarbon module.
+We cross-check the obtained values using the CodeCarbon module, which show close agreement. It is noted that these values apply only to GPU energy, not accounting for CPU, memory, networking, and cooling overheads. However, we also note that the Google Cloud Platform in London is reported as having a carbon-free energy (CFE) score of over 75%.[20] These confounding factors are not accounted for in our reported values.
 
 | Phase | Duration | Energy (Wh) | Carbon (g CO₂eq) |
 |---|---:|---:|---:|
@@ -308,36 +336,24 @@ Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We cal
 | ARC-VAE training | 4h 03m 24s | 202.8 | 96.35 |
 | ARC-VAE inference (synthetic data) | 0.04 s | 0.0006 | 0.0003 |
 | ARC-KNN retrieval (synthetic data) | 52m 44s | 43.95 | 20.88 |
-| ARC-VAE inference (synthetic data) | 0.04 s | 0.0006 | 0.0003 |
 | Sentinel-2 data extraction | 4m 15s | 3.5 | 1.68 |
 | ARC-VAE inference (field data) | 2.01 s | 0.028 | 0.013 |
 | ARC-KNN retrieval (field data) | 16m 36s | 13.8 | 6.57 |
 | **Total project** | **5h 16m 42s** | **279.6** | **132.85** |
 
-The dominant cost is model training (202.8 Wh, 72% of total energy) of ARC-VAE. 
-
-
-
-
-Subsequent inference incurs very low energy and carbon cost due to its speed. While training is computationally expensive, the 
-
-
-, which is incurred once and then amortised across all subsequent inference. Once trained, a single ARC-VAE forward pass costs 0.0006 Wh, 
-
+The dominant costs are ARC-VAE model training (202.8 Wh, 72% of total energy) of ARC-VAE, and ARC-KNN inference on both synthetic and field data. Over the full project, the carbon usage is estimated at 132.85 g CO₂eq, approximately equivalent to 0.338 miles driven by an average gasoline-powered passenger vehicle.[21]
 
 #### 5.1.2 Generative AI Usage
 
+Claude Sonnet 4.6 (Adaptive) was used for code debugging over a total of 48 queries. Jegham _et al._ (2025) report per-query energy usage (Wh) for a range of models. Sonnet 4.6 is not included in the study, so Sonnet 3.7 is used as a proxy.[22] Given that code debugging can produce long queries and outputs, we assume an upper bound of token usage of 10k input-1.5k output, giving a mean energy consumption per query of 5.518. This results in an approximate upper-bound of energy consumption over 48 queries of 264.87 Wh, equivalent to 125.80 g CO₂eq, similar to the energy and carbon cost of the full training and inference pipeline. This highlights the non-neglibible environmental costs of Large Language Model usage.
 
 #### 5.1.3 Validation Data Acquisition
 
-The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the European Space Agency Copernicus programme using the Sentinel-2 mission, which involves substantial upfront environment expenditure associated with satellite manufacturing, launch, and long-term mission operations. Similarly, agricultural field campaign sites such as Munich-North-Isar require manufacture of specialised sensing instruments, repeated technician travel, and long-term site maintenance. However, both of these costs are amortised across large numbers of observations, users, and downstream applications and are thus considered negligible with respect to this project. As a result, for model validation, the primary costs are the extraction of the relevant Sentinel-2 scenes from the Amazon Web Services API and inference of the ARC-VAE and ARC models on these scenes.
-
-... Quantify this
+The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the European Space Agency Copernicus programme using the Sentinel-2 mission, which involves substantial upfront environment expenditure associated with satellite manufacturing, launch, and long-term mission operations. Similarly, agricultural field campaign sites such as Munich-North-Isar require manufacture of specialised sensing instruments, repeated technician travel, and long-term site maintenance. However, both of these costs are amortised across large numbers of observations, users, and downstream applications and are thus considered negligible with respect to this project. As a result, for model validation, the primary costs are the extraction of the relevant Sentinel-2 scenes from the Amazon Web Services API and inference of the ARC-VAE and ARC models on these scenes, costing an estimated 3.5 Wh and 1.68 g CO₂eq.
 
 ### 5.2 Environmental Benefits
 
-Synthetic data - less computationally expensive?
-Faster inference?
+On the other hand, once trained, the ARC-VAE model brings a number of environmental benefits over ARC-KNN. First, self-supervised training on synthetic data eliminates costs of satellite data acquisition for training. Further, at inference (for example, on synthetic data), the greater speed of ARC-VAE significantly reduces energy and carbon costs (0.0006 Wh and 0.0003 g CO₂eq, compared to 43.95 Wh and 20.88 g CO₂eq for ARC-KNN). Further, were the limitations of this model to be addressed, it has the potential to support a number of downstream tasks that have knock-on effects on emissions. For example, real-time mapping of biophysical parameter trajectories could aid in optimising early stress detection, optimised irrigation scheduling, and yield forecasting. This could allow reduction of resource waste, in turn reducing energy and emission costs.
 
 ## 6. Video Summary
 
@@ -493,7 +509,13 @@ EGU General Assembly 2020, ser. EGU2020-5251, Online, 4–8 May 2020.
 
 [18] NVIDIA Corporation, 2019. NVIDIA T4 Tensor Core GPU Datasheet. Available at: https://www.router-switch.com/pdf/nvi-t4-datasheet.pdf [Accessed 20 May 2026].
 
-[19] Naitive Cloud, 2024. How to measure AI model energy efficiency. Available at: https://blog.naitive.cloud/measure-ai-model-energy-efficiency/ [Accessed 24 May 2026].
+[19] Naitive Cloud, 2024. How to measure AI model energy efficiency. Available at: https://blog.naitive.cloud/measure-ai-model-energy-efficiency/ [Accessed 20 May 2026].
+
+[20] Google Cloud, 2026. Google Cloud region carbon footprints. Available at: https://cloud.google.com/sustainability/region-carbon [Accessed 20 May 2026].
+
+[21] US EPA (United States Environmental Protection Agency), 2026. Greenhouse Gas Equivalencies Calculator. Available at: https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results [Accessed 20 May 2026].
+
+[22] Jegham, N., Abdelatti, Marwan., Elmoubarki, L. and Hendawi, A., 2025. How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference. arXiv preprint arXiv:2505.09598. Available at: https://arxiv.org/abs/2505.09598 [Accessed 20 May 2026].
 
 ---
 
@@ -508,7 +530,7 @@ Project Link: `https://github.com/harryfyjiswalker/arc-vae`
 ## Acknowledgements
 
 - This project is submitted as part of an coursework for **GEOL0069 – Artificial Intelligence for Earth Observation**, UCL Earth Sciences Department.
-- MNI Validation data courtesy of the **European Space Agency (ESA)** / Copernicus programme.
+- The ARC model decoder is fully based on the ARC model code of Yin _et al._ (2025), available at https://github.com/MarcYin/ARC; Dr Feng Yin also provided the MNI validation data, originally collected by Danner _et al._ (2019). Further, the differentiable PROSAIL implementation is based on the code of Mensah _et al._ (2025), available at: https://github.com/harryfyjiswalker/transformer-prosailvae.
 
 
 
