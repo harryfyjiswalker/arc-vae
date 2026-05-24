@@ -235,7 +235,7 @@ The encoder contains 619,414 trainable parameters, while the decoder is fully de
 
 #### 3.6.7
 
-At inference, given a Sentinel-2 time series for a target pixel or field, the decoder is discarded and the trained encoder performs a single forward pass to produce the posterior distribution $q(z|x)$ over all 11 ARC scaling parameters. The posterior mean $\mu = (\hat{p}, \hat{h}) is taken as the point estimate, and the posterior standard deviation $\sigma$ is retained as a per-parameter uncertainty estimate. 
+At inference, given a Sentinel-2 time series for a target pixel or field, the decoder is discarded and the trained encoder performs a single forward pass to produce the posterior distribution $q(z|x)$ over all 11 ARC scaling parameters. The posterior mean $\mu = (\hat{p}, \hat{h})$ is taken as the point estimate, and the posterior standard deviation $\sigma$ is retained as a per-parameter uncertainty estimate. 
 
 Cloud-affected or missing acquisiton dates are handled via the same padding and masking mechanism used during training, with the encoder attending only over valid, cloud-free observations. This means that no imputation or pre-processing of gaps is required and aims to mirror the robustness of ARC to irregular and sparse temporal signals.
 
