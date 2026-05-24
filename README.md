@@ -370,6 +370,175 @@ Please click on the image below to watch the video summary of this project:
   </a>
 </p>
 
+## Using ARC-VAE
+
+To use ARC-VAE on new test data, please follow these steps. Alternatively, see the example Google Colab notebook by following the link below:
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12QelTgI1Nf47fep3IouCm-zUDxMQZ-SA?usp=sharing)
+
+### Prerequisites
+
+- A Google account with access to [Google Colab](https://colab.research.google.com/)
+
+### Setup and Use
+
+The model can be run on a CPU in Google Colab.
+
+#### 1. Mount Google Drive
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+#### 2. Installation and Setup
+
+No changes required.
+
+```python
+#Installation and steup
+
+import subprocess, sys, os, importlib.util, json, math
+ 
+subprocess.run([sys.executable, "-m", "pip", "install", "-q",
+    "torch", "numpy", "pandas", "scipy", "matplotlib", "requests"],
+    check=True)
+subprocess.run([sys.executable, "-m", "pip", "install", "-q",
+    "https://github.com/MarcYin/ARC/archive/refs/heads/main.zip"],
+    check=True)
+print("Dependencies installed.")
+ 
+# Clone the ARC-VAE repository
+REPO_URL  = 'https://github.com/harryfyjiswalker/arc-vae.git'
+CLONE_DIR = '/tmp/arc-vae'
+if os.path.exists(CLONE_DIR):
+    subprocess.run(['rm', '-rf', CLONE_DIR])
+subprocess.run(['git', 'clone', REPO_URL, CLONE_DIR], check=True)
+print(f"ARC-VAE repository cloned.")
+ 
+# Patching ARC installation issue
+_dec_path = f'{CLONE_DIR}/arc_vae/archetype_decoder.py'
+with open(_dec_path) as f:
+    _src = f.read()
+_old = '_ARC_DATA = Path(__file__).parent.parent / "ARC" / "arc" / "data"'
+_new = ('try:\n'
+        '        import arc as _arc_mod\n'
+        '        _ARC_DATA = Path(os.path.dirname(os.path.abspath(_arc_mod.__file__))) / "data"\n'
+        '    except ImportError:\n'
+        '        _ARC_DATA = Path(__file__).parent.parent / "ARC" / "arc" / "data"')
+if _old in _src:
+    with open(_dec_path, 'w') as f:
+        f.write(_src.replace(_old, _new))
+    print("archetype_decoder.py patched")
+else:
+    print("archetype_decoder.py already up to date")
+ 
+# Load inference module
+sys.path.insert(0, f'{CLONE_DIR}/arc_vae')
+_spec = importlib.util.spec_from_file_location(
+    'inference_example', f'{CLONE_DIR}/inference_example.py')
+ie   = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(ie)
+ 
+CKPT = (f'{CLONE_DIR}/outputs/'
+        'maize_d128_L4_e20+30_sup10.0_20260518_1637/checkpoint_best.pt')
+ 
+_n = sum(p.numel() for p in ie.load_encoder(CKPT).parameters())
+print(f"Encoder loaded  ({_n:,} parameters)")
+print("Complete.")
+```
+
+#### 3. Defining field coordinates and season length
+
+Choose the desired coordinates of a field and season start/end date. Alternatively, upload a GeoJSON file for a given field.
+
+```python 
+# Without GeoJSON file: Enter coordinates (latitude, longitude) manually
+ 
+LAT        = 48.250784      # change to your field latitude
+LON        = 11.719026      # change to your field longitude
+START_DATE = '2022-04-01'   # season start  (YYYY-MM-DD)
+END_DATE   = '2022-10-01'   # season end    (YYYY-MM-DD)
+ 
+# With GeoJSON file:
+# Upload a .geojson file using the Colab file browser (folder icon, left panel),
+# then uncomment the line below and set the path.
+#
+#   GEOJSON_PATH = '/content/my_field.geojson'   # uncomment and edit
+#
+# You can draw a field boundary as a polygon at https://geojson.io and
+# download it as a .geojson file.
+
+ 
+# No editing required below:
+ 
+def _coords_to_geojson(lat, lon, size_m=200):
+    """Build a square GeoJSON polygon centred on (lat, lon)."""
+    dlat = size_m / 111320
+    dlon = size_m / (111320 * math.cos(math.radians(lat)))
+    gj   = {"type": "FeatureCollection", "features": [{"type": "Feature",
+            "properties": {}, "geometry": {"type": "Polygon",
+            "coordinates": [[[lon-dlon/2, lat-dlat/2],
+                              [lon+dlon/2, lat-dlat/2],
+                              [lon+dlon/2, lat+dlat/2],
+                              [lon-dlon/2, lat+dlat/2],
+                              [lon-dlon/2, lat-dlat/2]]]}}]}
+    path = '/tmp/_arc_vae_field.geojson'
+    with open(path, 'w') as f:
+        json.dump(gj, f)
+    return path
+ 
+# Resolve which GeoJSON to use
+try:
+    GEOJSON_PATH   
+except NameError:
+    GEOJSON_PATH = _coords_to_geojson(LAT, LON)
+    print(f"Using coordinates ({LAT}, {LON})  (200 m × 200 m box)")
+ 
+print(f"Field  : {GEOJSON_PATH}")
+print(f"Season : {START_DATE}  to  {END_DATE}")
+ ```
+
+#### 4. Running Inference
+
+```python
+# Fetches S2 from AWS, runs the encoder on every pixel, plots results.
+# First run downloads S2 data
+# Data cached for subsequent runs
+
+import numpy as np
+ 
+doys, mu, sigma, lai_traj, mask = ie.run_field(
+    geojson_path    = GEOJSON_PATH,
+    start_date      = START_DATE,
+    end_date        = END_DATE,
+    crop_type       = 'maize',
+    checkpoint_path = CKPT,
+    data_folder     = '/tmp/arc_vae_s2_cache',
+    plot            = True,
+)
+ 
+print("  Results summary:")
+print(f"  Cloud-free S2 dates : {len(doys)}")
+print(f"  Field pixels        : {(~mask).sum():,}")
+print(f"  Median green-up DOY : {np.median(mu[:,  8]):.0f}")
+print(f"  Median harvest DOY  : {np.median(mu[:, 10]):.0f}")
+print(f"  Median peak LAI     : {lai_traj.max(axis=1).mean():.2f}  m² m⁻²")
+print("\n  All 11 recovered parameters (field median):")
+print(f"  {'Parameter':<12}  {'Median':>8}  {'Std (uncertainty)':>18}")
+print(f"  {'─'*44}")
+for i, (name, unit) in enumerate(zip(ie.PARAM_NAMES, ie.PARAM_UNITS)):
+    print(f"  {name:<12}  {np.median(mu[:, i]):>8.4f}  "
+          f"± {np.median(sigma[:, i]):>6.4f}  ({unit})")
+  
+#Plots can then be made as desired. For example, uncomment below to show a spatial map of a specific parameter across the field.
+# Change param_idx to the parameter you want (0–10, see list above):
+#   0=N  1=Cab  2=Cm  3=Cw  4=LAI  5=ALA  6=Cbrown
+#   7=k_growth  8=h_start  9=k_senes  10=h_end
+#
+#   ie.plot_parameter_map(mu, mask, param_idx=10, title='Predicted harvest DOY')
+ ```
+
 ## Code and Repository Structure
 
 The notebook used for training and validation can be found at the link below, while the code for the ARC-VAE model itself is found in the arc-vae folder of this repository.
@@ -415,7 +584,6 @@ arc-vae/
 ├── README.md
 └── requirements.txt
 ```
-
 ## Data Availability
 
 The LAI field validation of Danner _et al._ (2019) is not publically available; access must be requested from the authors.[18]
