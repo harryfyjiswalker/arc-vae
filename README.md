@@ -73,9 +73,9 @@ This approach demonstrates impressive performance in validation. Using archetype
 #### 2.1.3 Variational Autoencoders and PROSAIL-VAE
 
 <p align="center">
-  <img src="/images/Zerah et al.png" width="50%" alt="PROSAIL-VAE">
+  <img src="/images/Mensahetal..png" width="50%" alt="PROSAIL-VAE">
   <br>
-  <em>Figure 3: Architecture diagram of the PROSAIL-VAE model, reproduced from Zérah et al. (2024).[14]</em>
+  <em>Figure 3: Architecture diagram of the Transformer PROSAIL-VAE model, reproduced from Mensah et al. (2025).[14]</em>
 
 </p>
 
