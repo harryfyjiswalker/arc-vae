@@ -324,9 +324,9 @@ Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We cal
 <p align="center">
   $$E = \frac{P \times t}{3600}$$
   <br>
-  $$C_{gCO_2eq} = \frac{E_{Wh}}{1000} \times I$$
+  $$C_{gCO_2eq} = \frac{E}{1000} \times I$$
 </p>
-where P is the power in Watts, t is time in seconds, C is the carbon usage in gCO₂eq, and I is the global average grid carbon intensity.
+where E is the energy in Watt hours, P is the power in Watts, t is time in seconds, C is the carbon usage in gCO₂eq, and I is the global average grid carbon intensity.
 
 We cross-check the obtained values using the CodeCarbon module, which show close agreement. It is noted that these values apply only to GPU energy, not accounting for CPU, memory, networking, and cooling overheads. However, we also note that the Google Cloud Platform in London is reported as having a carbon-free energy (CFE) score of over 75%.[20] These confounding factors are not accounted for in our reported values.
 
