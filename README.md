@@ -418,7 +418,6 @@ arc-vae/
 ## Data Availability
 
 The LAI field validation of Danner _et al._ (2019) is not publically available; access must be requested from the authors.[18]
----
 
 ## References
 
