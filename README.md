@@ -333,10 +333,9 @@ The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the 
 
 <p align="center">
   <a href="https://youtu.be/BT13vxDiuNI">
-    <img src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg" alt="Watch the video" width="600">
+    <img src="images/Videothumbnail.png" alt="Watch the video" width="600">
   </a>
 </p>
-
 ---
 
 ## Getting Started
