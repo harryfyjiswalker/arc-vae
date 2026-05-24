@@ -299,15 +299,31 @@ We consider that the main sources of energy usage and emissions in this project 
 
 #### 5.1.1 Synthetic Data Generation, Training, and Inference
 
+
+Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We calculate carbon costs estimated using an estimated average T4 GPU power draw of 50W (the T4 Thermal Design Power (TDP) is 70W; a typical load is expected to lie at approximately 40W to 65W [18]) and a global average grid carbon intensity of approximately 475 g$CO_2$eq/kWh [19]. We cross-check the obtained values using the CodeCarbon module.
+
 | Phase | Duration | Energy (Wh) | Carbon (g CO₂eq) |
 |---|---:|---:|---:|
 | Synthetic data generation | 18m 34s | 15.5 | 7.36 |
 | ARC-VAE training | 4h 03m 24s | 202.8 | 96.35 |
-| ARC-VAE inference | 0.04 s | 0.0006 | 0.0003 |
-| ARC-KNN retrieval | 52m 44s | 43.95 | 20.88 |
-| **Total project** | **5h 14m 42s** | **262.3** | **124.59** |
+| ARC-VAE inference (synthetic data) | 0.04 s | 0.0006 | 0.0003 |
+| ARC-KNN retrieval (synthetic data) | 52m 44s | 43.95 | 20.88 |
+| ARC-VAE inference (synthetic data) | 0.04 s | 0.0006 | 0.0003 |
+| Sentinel-2 data extraction | 4m 15s | 3.5 | 1.68 |
+| ARC-VAE inference (field data) | 2.01 s | 0.028 | 0.013 |
+| ARC-KNN retrieval (field data) | 16m 36s | 13.8 | 6.57 |
+| **Total project** | **5h 16m 42s** | **279.6** | **132.85** |
 
-Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab.
+The dominant cost is model training (202.8 Wh, 72% of total energy) of ARC-VAE. 
+
+
+
+
+Subsequent inference incurs very low energy and carbon cost due to its speed. While training is computationally expensive, the 
+
+
+, which is incurred once and then amortised across all subsequent inference. Once trained, a single ARC-VAE forward pass costs 0.0006 Wh, 
+
 
 #### 5.1.2 Generative AI Usage
 
@@ -319,6 +335,9 @@ The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the 
 ... Quantify this
 
 ### 5.2 Environmental Benefits
+
+Synthetic data - less computationally expensive?
+Faster inference?
 
 ## 6. Video Summary
 
@@ -378,7 +397,7 @@ arc-vae/
 
 ## Data Availability
 
-The LAI field validation of Danner _et al._ (2019) is not publically available; access must be requested from the authors.
+The LAI field validation of Danner _et al._ (2019) is not publically available; access must be requested from the authors.[18]
 
 ## Using ARC-VAE
 
@@ -472,7 +491,9 @@ EGU General Assembly 2020, ser. EGU2020-5251, Online, 4–8 May 2020.
 
 [17] Danner, M., Berger, K., Wocher, M., Mauser, W. and Hank, T., 2019. Fitted PROSAIL parameterization of leaf inclinations, water content and brown pigment content for winter wheat and maize canopies. Remote Sensing, 11(10), p.1150. Available at: https://doi.org/10.3390/rs11101150.
 
-[18] Weiß, T., Ramsauer, T., Jagdhuber, T., Löw, A. and Marzahn, P., 2021. Sentinel-1 Backscatter Analysis and Radiative Transfer Modeling of Dense Winter Wheat Time Series. Remote Sensing, 13(12), p.2320. Available at: https://doi.org/10.3390/rs13122320.
+[18] NVIDIA Corporation, 2019. NVIDIA T4 Tensor Core GPU Datasheet. Available at: https://www.router-switch.com/pdf/nvi-t4-datasheet.pdf [Accessed 20 May 2026].
+
+[19] Naitive Cloud, 2024. How to measure AI model energy efficiency. Available at: https://blog.naitive.cloud/measure-ai-model-energy-efficiency/ [Accessed 24 May 2026].
 
 ---
 
