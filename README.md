@@ -39,9 +39,9 @@ The regular and accurate elucidation of crop biophysical parameters is essential
 #### 2.1.1 Radiative Transfer Models and Challenges
 
 <p align="center">
-  <img src="/images/PROSAIL_flow1.png" width="50%" alt="PROSAIL flow">
+  <img src="/images/PROSAILdiagram.png" width="60%" alt="PROSAIL flow">
   <br>
-  <em>Figure 1: Flowchart depiction of the PROSAIL model, reproduced from Zérah (2024).[14]</em>
+  <em>Figure 1: Diagram of Remote Sensing Technique: PROSAIL Radiative Transfer Model.[14]</em>
 
 </p>
 
