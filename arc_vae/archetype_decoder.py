@@ -45,7 +45,11 @@ from pathlib import Path
 from prosail_emulator import PROSAILEmulator, prepare_input
 
 # Paths
-_ARC_DATA = Path(__file__).parent.parent / "ARC" / "arc" / "data"
+try:
+    import arc as _arc_mod
+    _ARC_DATA = Path(os.path.dirname(os.path.abspath(_arc_mod.__file__))) / "data"
+except ImportError:
+    _ARC_DATA = Path(__file__).parent.parent / "ARC" / "arc" / "data"
 
 # Physiological limits (order: N, Cab, Cm, Cw, LAI, ALA, Cbrown)
 _PARAM_NAMES = ["N", "Cab", "Cm", "Cw", "LAI", "ALA", "Cbrown"]
