@@ -376,7 +376,11 @@ arc-vae/
 └── requirements.txt
 ```
 
-## Getting Started
+## Data Availability
+
+The LAI field validation of Danner _et al._ (2019) is not publically available; access must be requested from the authors.
+
+## Using ARC-VAE
 
 ### Prerequisites
 
