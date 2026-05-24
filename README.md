@@ -338,8 +338,49 @@ Please click on the image below to watch the video summary of this project:
 
 ## Code and Repository Structure
 
+The notebook used for training and validation can be found at the link below, while the code for the ARC-VAE model itself is found in the arc-vae folder of this repository.
+
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tQtNPm1Xu-6fAh3S7LxtRdomay1yjygj?usp=sharing)
 ---
+
+```
+arc-vae/
+├── .gitignore
+├── arc_vae/
+│   ├── archetype_decoder.py
+│   ├── compare_arc_knn.py
+│   ├── encoder.py
+│   ├── prosail_emulator.py
+│   ├── synthetic_dataloader.py
+│   ├── train_arc_vae.py
+│   ├── training.py
+│   └── validate_synthetic.py
+├── ARC_VAE_training_validation.ipynb
+├── example_field.geojson
+├── images/
+│   ├── ARC_model.jpg
+│   ├── ARCVAEArchitecture1.png
+│   ├── BioParamRecon.png
+│   ├── Field Validation Results1.png
+│   ├── LatentVariableRecon.png
+│   ├── Mensahetal..png
+│   ├── placeholder.txt
+│   ├── PROSAIL_flow1.png
+│   ├── PROSAILdiagram.png
+│   ├── regional_and_field_panels.png
+│   ├── synthetic_comparison.png
+│   ├── Videothumbnail.png
+│   └── Zerah et al.png
+├── inference_example.py
+├── outputs/
+│   └── maize_d128_L4_e20+30_sup10.0_20260518_1637/
+│       ├── .gitkeep
+│       ├── checkpoint_best.pt
+│       ├── config.json
+│       └── training_report.json
+├── README.md
+└── requirements.txt
+```
 
 ## Getting Started
 
@@ -383,19 +424,7 @@ S3B_SR_2_LAN_SI_20190301T231304_20190301T233006_20230405T162425_1021_022_301____
 
 ## Repository Structure
 
-```
-GEOL0069-Week4/
- ├── Unit_2_Unsupervised_Learning_Methods.ipynb          # Main assignment notebook
- ├── Chapter1_Unsupervised_Learning_Methods_Michel.ipynb  # Base reference notebook
- ├── figures/
- │   ├── feature_space_scatter.png        # Fig 1 - PP vs SSD feature space
- │   ├── sample_waveforms_sea_ice.png     # Fig 2a - Individual sea-ice echoes
- │   ├── sample_waveforms_leads.png       # Fig 2b - Individual lead echoes
- │   ├── mean_std_waveforms.png           # Fig 3 - Mean +/- std (unaligned)
- │   ├── aligned_mean_std_waveforms.png   # Fig 4 - Mean +/- std (FFT-aligned)
- │   └── confusion_matrix.png             # Fig 5 - Confusion matrix heatmap
- └── README.md
-```
+
 
 ---
 
