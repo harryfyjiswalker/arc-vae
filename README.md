@@ -330,6 +330,8 @@ where $P_w$ is the power in Watts, $t_s$ is time in seconds, and $I$ is the glob
 
 We cross-check the obtained values using the CodeCarbon module, which show close agreement. It is noted that these values apply only to GPU energy, not accounting for CPU, memory, networking, and cooling overheads. However, we also note that the Google Cloud Platform in London is reported as having a carbon-free energy (CFE) score of over 75%.[20] These confounding factors are not accounted for in our reported values.
 
+<div align="center">
+   
 | Phase | Duration | Energy (Wh) | Carbon (g CO₂eq) |
 |---|---:|---:|---:|
 | Synthetic data generation | 18m 34s | 15.5 | 7.36 |
@@ -340,6 +342,8 @@ We cross-check the obtained values using the CodeCarbon module, which show close
 | ARC-VAE inference (field data) | 2.01 s | 0.028 | 0.013 |
 | ARC-KNN retrieval (field data) | 16m 36s | 13.8 | 6.57 |
 | **Total project** | **5h 16m 42s** | **279.6** | **132.85** |
+
+</div>
 
 The dominant costs are ARC-VAE model training (202.8 Wh, 72% of total energy) of ARC-VAE, and ARC-KNN inference on both synthetic and field data. Over the full project, the carbon usage is estimated at 132.85 g CO₂eq, approximately equivalent to 0.338 miles driven by an average gasoline-powered passenger vehicle.[21]
 
