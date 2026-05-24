@@ -320,13 +320,13 @@ We consider that the main sources of energy usage and emissions in this project 
 
 #### 5.1.1 Synthetic Data Generation, S2 acquisition, Training, and Inference
 
-Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We calculate carbon costs estimated using an estimated average T4 GPU power draw of 50W (the T4 Thermal Design Power (TDP) is 70W; a typical load is expected to lie at approximately 40W to 65W [18]) and a global average grid carbon intensity of approximately I = 475 g$CO_2$eq/kWh [19]. Energy in Wh and carbon usage in (g CO₂eq) is then calculated using
+Experiments were conducted on an NVIDIA Tesla T4 GPU within Google Colab. We calculate carbon costs estimated using an estimated average T4 GPU power draw of 50W (the T4 Thermal Design Power (TDP) is 70W; a typical load is expected to lie at approximately 40W to 65W [18]) and a global average grid carbon intensity of approximately I = 475 gCO₂eq/kWh [19]. Energy in Wh and carbon usage in (g CO₂eq) is then calculated using
 <p align="center">
-  $$E_{Wh} = \frac{P_W \times t_s}{3600}$$
+  $$E = \frac{P \times t}{3600}$$
   <br>
   $$C_{gCO_2eq} = \frac{E_{Wh}}{1000} \times I$$
 </p>
-where $P_w$ is the power in Watts, $t_s$ is time in seconds, and $I$ is the global average grid carbon intensity.
+where P is the power in Watts, t is time in seconds, C is the carbon usage in gCO₂eq, and I is the global average grid carbon intensity.
 
 We cross-check the obtained values using the CodeCarbon module, which show close agreement. It is noted that these values apply only to GPU energy, not accounting for CPU, memory, networking, and cooling overheads. However, we also note that the Google Cloud Platform in London is reported as having a carbon-free energy (CFE) score of over 75%.[20] These confounding factors are not accounted for in our reported values.
 
