@@ -54,7 +54,7 @@ However, the practical utility of PROSAIL and other RTMs in monitoring applicati
 #### 2.1.2 Archetypal Crop Trait Dynamics (ARC)
 
 <p align="center">
-  <img src="/images/ARC_model.jpg" width="50%" alt="ARC">
+  <img src="/images/ARC_model.jpg" width="60%" alt="ARC">
   <br>
   <em>Figure 2: Flowchart depiction of the ARC model, reproduced from Yin et al (2025).[11]</em>
 
@@ -73,7 +73,7 @@ This approach demonstrates impressive performance in validation. Using archetype
 #### 2.1.3 Variational Autoencoders and PROSAIL-VAE
 
 <p align="center">
-  <img src="/images/Mensahetal..png" width="50%" alt="PROSAIL-VAE">
+  <img src="/images/Mensahetal..png" width="70%" alt="PROSAIL-VAE">
   <br>
   <em>Figure 3: Architecture diagram of the Transformer PROSAIL-VAE model, reproduced from Mensah et al. (2025).[14]</em>
 
