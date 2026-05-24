@@ -331,6 +331,8 @@ The Sentinel-2 imagery used in the Munich-North-Isar dataset is produced by the 
 
 ## 6. Video Summary
 
+Please click on the image below to watch the video summary of this project:
+
 <p align="center">
   <a href="https://youtu.be/BT13vxDiuNI">
     <img src="images/Videothumbnail.png" alt="Watch the video" width="600">
