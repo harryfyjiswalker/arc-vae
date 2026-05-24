@@ -1,7 +1,4 @@
 # GEOL0069 Final Project: Physics-Informed Deep Learning for Efficient Extraction of Biophysical Parameter Time Series
-
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1zC4AWfp0Af7_LH2F_ZHQNeYrFT6Oe19A)
-
 ---
 
 <details>
@@ -338,6 +335,10 @@ Please click on the image below to watch the video summary of this project:
     <img src="images/Videothumbnail.png" alt="Watch the video" width="600">
   </a>
 </p>
+
+## Code and Repository Structure
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tQtNPm1Xu-6fAh3S7LxtRdomay1yjygj?usp=sharing)
 ---
 
 ## Getting Started
