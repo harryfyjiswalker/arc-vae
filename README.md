@@ -414,51 +414,6 @@ arc-vae/
 ## Data Availability
 
 The LAI field validation of Danner _et al._ (2019) is not publically available; access must be requested from the authors.[18]
-
-## Using ARC-VAE
-
-### Prerequisites
-
-- A Google account with access to [Google Colab](https://colab.research.google.com/)
-- A [Google Drive](https://drive.google.com/) folder containing the Sentinel-3 `.SEN3` data file
-
-### Installation
-
-The notebook runs in Google Colab. Install non-standard packages at the start of each session:
-
-```python
-!pip install netCDF4
-!pip install rasterio
-!pip install basemap
-!pip install cartopy
-```
-
-Mount Google Drive:
-
-```python
-from google.colab import drive
-drive.mount('/content/drive')
-```
-
-### Data
-
-The base reference notebook, developed by Dr Michel Tsamados is available at:  
-https://drive.google.com/file/d/1HDSLjsWhLIDF-qbRj6sbGVd9t1LB7890/view?usp=drive_link
-
-The Sentinel-3 data is available via the [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/). The specific file used is:
-
-```
-S3B_SR_2_LAN_SI_20190301T231304_20190301T233006_20230405T162425_1021_022_301______LN3_R_NT_005.SEN3
-```
-
-> **Note:** The data file is **not included** in this repository due to size. Download it from the Copernicus Data Space and update the file path in the notebook.
-
----
-
-## Repository Structure
-
-
-
 ---
 
 ## References
